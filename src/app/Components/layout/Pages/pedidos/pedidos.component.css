@@ -1,0 +1,15 @@
+.full-width{
+    width: 80%;
+}
+
+.table{
+    width: 100%;
+}
+.total-section {
+    margin-top: 20px;
+    text-align: right;
+}
+
+.total-section div {
+    margin-top: 10px;
+}

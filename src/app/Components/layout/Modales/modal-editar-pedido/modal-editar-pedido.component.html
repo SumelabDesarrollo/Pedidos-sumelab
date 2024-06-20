@@ -1,0 +1,37 @@
+<h2 mat-dialog-title>Editar Pedido</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="formularioEditar">
+    <mat-form-field appearance="fill">
+      <mat-label>Cliente</mat-label>
+      <mat-select formControlName="idcliente">
+        <mat-option *ngFor="let cliente of listaClientes" [value]="cliente.idcliente">
+          {{ cliente.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div formArrayName="detallepedidos">
+      <div *ngFor="let detalle of detallesPedidos.controls; let i=index" [formGroupName]="i">
+        <mat-form-field appearance="fill">
+          <mat-label>Producto</mat-label>
+          <mat-select formControlName="idProducto">
+            <mat-option *ngFor="let producto of listaProductos" [value]="producto.idProducto">
+              {{ producto.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Cantidad Ordenada</mat-label>
+          <input matInput formControlName="qtyOrder" type="number">
+        </mat-form-field>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancelar</button>
+  <button mat-button (click)="onSave()">Guardar</button>
+</mat-dialog-actions>

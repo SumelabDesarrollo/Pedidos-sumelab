@@ -1,0 +1,75 @@
+<h2 mat-dialog-title>{{ datosPedido ? 'Agregar Productos' : 'Nuevo Pedido' }}</h2>
+
+<mat-dialog-content>
+    <form [formGroup]="formularioPedido">
+        <mat-grid-list cols="2" rowHeight="80px">
+            <mat-grid-tile [colspan]="2">
+                <mat-form-field class="full-width" appearance="fill">
+                    <mat-label>Producto</mat-label>
+                    <input matInput type="text" placeholder="Buscar..." formControlName="producto"
+                        [matAutocomplete]="auto" >
+                    <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete"
+                        (optionSelected)="productosParaPedido($event)" [displayWith]="mostrarProductos">
+                        <mat-option *ngFor="let option of listaProductosFiltrados" [value]="option">
+                            {{ option.name }}
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </mat-grid-tile>
+
+            <mat-grid-tile>
+                <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
+                    <mat-label>Cantidad</mat-label>
+                    <input matInput type="number" formControlName="cantidad">
+                </mat-form-field>
+            </mat-grid-tile>
+
+            <!-- Campo de solo lectura: Disponible Virtual -->
+            <mat-grid-tile>
+                <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
+                    <mat-label>Stock</mat-label>
+                    <input matInput type="text" formControlName="stock" readonly>
+                </mat-form-field>
+            </mat-grid-tile>
+
+            <!-- Campo de solo lectura: Marca -->
+            <mat-grid-tile>
+                <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
+                    <mat-label>Marca</mat-label>
+                    <input matInput type="text" formControlName="marca" readonly>
+                </mat-form-field>
+            </mat-grid-tile>
+
+
+            <!-- Campo de solo lectura: Precio de venta al publico -->
+            <mat-grid-tile>
+                <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
+                    <mat-label>Precio de venta al público</mat-label>
+                    <input matInput type="text" formControlName="slProductPvp" readonly>
+                </mat-form-field>
+            </mat-grid-tile>
+            <!-- Campo de solo lectura: Precio de venta a la farmacia -->
+            <mat-grid-tile>
+                <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
+                    <mat-label>Precio de venta a la farmacia</mat-label>
+                    <input matInput type="text" formControlName="slProductPvf" readonly>
+                </mat-form-field>
+            </mat-grid-tile>
+
+            <mat-grid-tile>
+                <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
+                    <mat-label>Impuestos</mat-label>
+                    <input matInput type="text" formControlName="impuestos" readonly>
+                </mat-form-field>
+            </mat-grid-tile>
+
+        </mat-grid-list>
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-raised-button mat-dialog-close color="warn">Volver</button>
+    <button mat-raised-button color="primary" [disabled]="formularioPedido.invalid" (click)="guardarPedido()">
+        {{ datosPedido ? 'Agregar' : 'Guardar' }}
+    </button>
+</mat-dialog-actions>

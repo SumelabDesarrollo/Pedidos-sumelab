@@ -1,0 +1,13 @@
+.mat-list-item {
+    display: flex;
+    align-items: center;
+  }
+  
+  .mat-icon {
+    margin-right: 10px; /* Ajusta el espacio entre el icono y el texto según tu preferencia */
+  }
+  
+  .mat-line {
+    white-space: nowrap; /* Evita que el texto se desplace a la siguiente línea */
+  }
+  

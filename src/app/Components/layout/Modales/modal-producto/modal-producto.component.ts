@@ -27,14 +27,16 @@ export class ModalProductoComponent implements OnInit{
   ){
     this.formularioProductos = this.fb.group({
       nxtIdErp: ['',Validators.required],
-      displayName:['',Validators.required],
-      slMarca:['',Validators.required],
-      supplierDifareCode:['',Validators.required],
+      name:['',Validators.required],
       listPrice:['',Validators.required],
       slProductPvp:['',Validators.required],
-      virtualAvailable:['',Validators.required],
-      taxesId:['',Validators.required]
-
+      stock:['',Validators.required],
+      taxesId:['',Validators.required],
+      estado:['',Validators.required],
+      slMarca:['',Validators.required],
+      grupo:['',Validators.required],
+      presentacion:['',Validators.required],
+      fraccionador:['',Validators.required]
     });
     if(this.datosProductos != null){
       this.tituloAccion = "Editar";
@@ -48,13 +50,18 @@ export class ModalProductoComponent implements OnInit{
       this.formularioProductos.patchValue({
 
         nxtIdErp: this.datosProductos.nxtIdErp,
-        displayName:this.datosProductos.name,
-        slMarca:this.datosProductos.slMarca,
-        supplierDifareCode:this.datosProductos.supplierDifareCode,
+        name:this.datosProductos.name,
         listPrice:this.datosProductos.listPrice,
         slProductPvp:this.datosProductos.slProductPvp,
-        virtualAvailable:this.datosProductos.stock,
-        taxesId:this.datosProductos.taxesId
+        stock:this.datosProductos.stock,
+        taxesId:this.datosProductos.taxesId,
+        estado:this.datosProductos.estado,
+        slMarca:this.datosProductos.slMarca,
+        grupo:this.datosProductos.grupo,
+        presentacion:this.datosProductos.presentacion,
+        fraccionador:this.datosProductos.fraccionador
+
+        
       });
     }
 
@@ -66,14 +73,17 @@ export class ModalProductoComponent implements OnInit{
     const _productos:Productos={
       idProducto: this.datosProductos == null ? 0 : this.datosProductos.idProducto,
       name: this.formularioProductos.value.name,
-      slMarca: this.formularioProductos.value.sl_marca,
-      supplierDifareCode: this.formularioProductos.value.supplierDifareCode,
       listPrice: this.formularioProductos.value.listPrice,
       slProductPvp: this.formularioProductos.value.slProductPvp,
       stock: this.formularioProductos.value.stock,
       taxesId: this.formularioProductos.value.taxesId,
+      estado: false,
+      slMarca: this.formularioProductos.value.sl_marca,
       nxtIdErp: '',
-      estado: false
+      grupo: '',
+      presentacion: "",
+      fraccionador: "",
+      supplierDifareCode: ''
     }
 
     if(this.datosProductos == null){

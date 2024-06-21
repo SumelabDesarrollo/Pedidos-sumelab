@@ -8,8 +8,49 @@
             <mat-grid-tile>
                 <mat-form-field appearance="outline">
                     <mat-label>Nombre Mostrado</mat-label>
-                    <input matInput auto="of" formControlName="displayName">
+                    <input matInput auto="of" formControlName="name">
                     <mat-icon matSuffix>fit_screen</mat-icon>
+                </mat-form-field>
+            </mat-grid-tile>
+
+            <mat-grid-tile>
+                <mat-form-field appearance="outline">
+                    <mat-label>PVF</mat-label>
+                    <input matInput auto="of" formControlName="listPrice">
+                    <mat-icon matSuffix>request_quote</mat-icon>
+                </mat-form-field>
+            </mat-grid-tile>
+
+            <mat-grid-tile>
+                <mat-form-field appearance="outline">
+                    <mat-label>PVP</mat-label>
+                    <input matInput auto="of" formControlName="slProductPvp">
+                    <mat-icon matSuffix>money</mat-icon>
+                </mat-form-field>
+            </mat-grid-tile>
+
+            <mat-grid-tile>
+                <mat-form-field appearance="outline">
+                    <mat-label>Stock</mat-label>
+                    <input matInput auto="of" formControlName="stock" type="number">
+                    <mat-icon matSuffix>inventory</mat-icon>
+                </mat-form-field>
+            </mat-grid-tile>
+
+
+            <mat-grid-tile>
+                <mat-form-field appearance="outline">
+                    <mat-label>Impuestos</mat-label>
+                    <input matInput auto="of" formControlName="taxesId">
+                    <mat-icon matSuffix>attach_money</mat-icon>
+                </mat-form-field>
+            </mat-grid-tile>
+
+            <mat-grid-tile>
+                <mat-form-field appearance="outline">
+                    <mat-label>Estado</mat-label>
+                    <input matInput auto="of" formControlName="estado">
+                    <mat-icon matSuffix>check circle</mat-icon>
                 </mat-form-field>
             </mat-grid-tile>
 
@@ -24,44 +65,36 @@
 
             <mat-grid-tile>
                 <mat-form-field appearance="outline">
-                    <mat-label>Código Difare</mat-label>
-                    <input matInput auto="of" formControlName="supplierDifareCode">
+                    <mat-label>Grupo</mat-label>
+                    <input matInput auto="of" formControlName="grupo">
+                    <mat-icon matSuffix>tag</mat-icon>
+                </mat-form-field>
+            </mat-grid-tile>
+
+            <mat-grid-tile>
+                <mat-form-field appearance="outline">
+                    <mat-label>Presentacion</mat-label>
+                    <input matInput auto="of" formControlName="presentacion">
                     <mat-icon matSuffix>tag</mat-icon>
                 </mat-form-field>
             </mat-grid-tile>
             
-            <mat-grid-tile>
-                <mat-form-field appearance="outline">
-                    <mat-label>PVF</mat-label>
-                    <input matInput auto="of" formControlName="listPrice">
-                    <mat-icon matSuffix>request_quote</mat-icon>
-                </mat-form-field>
-            </mat-grid-tile>
-
 
             <mat-grid-tile>
                 <mat-form-field appearance="outline">
-                    <mat-label>PVP</mat-label>
-                    <input matInput auto="of" formControlName="slProductPvp">
-                    <mat-icon matSuffix>money</mat-icon>
+                    <mat-label>Fraccionador</mat-label>
+                    <input matInput auto="of" formControlName="fraccionador">
+                    <mat-icon matSuffix>tag</mat-icon>
                 </mat-form-field>
             </mat-grid-tile>
+            
 
-            <mat-grid-tile>
-                <mat-form-field appearance="outline">
-                    <mat-label>Stock</mat-label>
-                    <input matInput auto="of" formControlName="virtualAvailable" type="number">
-                    <mat-icon matSuffix>inventory</mat-icon>
-                </mat-form-field>
-            </mat-grid-tile>
 
-            <mat-grid-tile>
-                <mat-form-field appearance="outline">
-                    <mat-label>Impuestos</mat-label>
-                    <input matInput auto="of" formControlName="taxesId">
-                    <mat-icon matSuffix>attach_money</mat-icon>
-                </mat-form-field>
-            </mat-grid-tile>
+            
+
+            
+
+            
 
         </mat-grid-list>
     </form>

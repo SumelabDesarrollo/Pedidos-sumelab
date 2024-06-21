@@ -15,13 +15,17 @@
 
                 <table mat-table [dataSource]="dataListaClientes">
 
-                    <ng-container matColumnDef="vat">
-                        <th mat-header-cell *matHeaderCellDef> RUC </th>
-                        <td mat-cell *matCellDef="let user"> {{user.vat}} </td>
+                    <ng-container matColumnDef="nxtIdErp">
+                        <th mat-header-cell *matHeaderCellDef> Código </th>
+                        <td mat-cell *matCellDef="let user"> {{user.nxtIdErp}} </td>
                       </ng-container>
-                      <ng-container matColumnDef="Name">
+                      <ng-container matColumnDef="name">
                         <th mat-header-cell *matHeaderCellDef> Nombre </th>
                         <td mat-cell *matCellDef="let user"> {{user.name}} </td>
+                      </ng-container>
+                      <ng-container matColumnDef="vat">
+                        <th mat-header-cell *matHeaderCellDef> RUC </th>
+                        <td mat-cell *matCellDef="let user"> {{user.vat}} </td>
                       </ng-container>
                       <ng-container matColumnDef="xStudioNombreComercialSap">
                         <th mat-header-cell *matHeaderCellDef> Nombre Comercial SAP</th>
@@ -29,17 +33,11 @@
                       </ng-container>
                       <ng-container matColumnDef="slClaCli">
                         <th mat-header-cell *matHeaderCellDef> Clase de cliente </th>
-                        <td mat-cell *matCellDef="let user"> {{user.SlClaCli}} </td>
+                        <td mat-cell *matCellDef="let user"> {{user.slClaCli}} </td>
                       </ng-container>
                       <ng-container matColumnDef="propertyPaymentTermId">
                         <th mat-header-cell *matHeaderCellDef> Plazo de pago </th>
                         <td mat-cell *matCellDef="let user"> {{user.propertyPaymentTermId}} </td>
-                      </ng-container>
-
-
-                      <ng-container matColumnDef="email">
-                        <th mat-header-cell *matHeaderCellDef> Correo electrónico </th>
-                        <td mat-cell *matCellDef="let user"> {{user.email}} </td>
                       </ng-container>
 
                       <ng-container matColumnDef="creditLimit">
@@ -57,32 +55,31 @@
                         <td mat-cell *matCellDef="let user"> {{user.asesorCredito}} </td>
                       </ng-container>
 
-                      <ng-container matColumnDef="callcenter">
-                        <th mat-header-cell *matHeaderCellDef> Call Center </th>
-                        <td mat-cell *matCellDef="let user"> {{user.callcenter}} </td>
+                      <ng-container matColumnDef="asesorCallcenter">
+                        <th mat-header-cell *matHeaderCellDef> Asesor de Call Center </th>
+                        <td mat-cell *matCellDef="let user"> {{user.asesorCallcenter}} </td>
                       </ng-container>
 
-                      <ng-container matColumnDef="slActiveSap">
-                        <th mat-header-cell *matHeaderCellDef> Estado SAP </th>
-                        <td mat-cell *matCellDef="let user"> {{user.slActiveSap}} </td>
+                      <ng-container matColumnDef="estado">
+                        <th mat-header-cell *matHeaderCellDef> Estado  </th>
+                        <td mat-cell *matCellDef="let user"> {{user.estado}} </td>
                       </ng-container>
 
-                      <ng-container matColumnDef="stateId">
-                        <th mat-header-cell *matHeaderCellDef> Estado Cliente </th>
-                        <td mat-cell *matCellDef="let user"> {{user.stateId}} </td>
+                      <ng-container matColumnDef="maximodias">
+                        <th mat-header-cell *matHeaderCellDef> Máximo de días </th>
+                        <td mat-cell *matCellDef="let user"> {{user.maximodias}} </td>
                       </ng-container>
 
-                      <ng-container matColumnDef="observacion">
-                        <th mat-header-cell *matHeaderCellDef> Observacion </th>
-                        <td mat-cell *matCellDef="let user"> {{user.observacion}} </td>
+                      <ng-container matColumnDef="saldo">
+                        <th mat-header-cell *matHeaderCellDef> Saldo </th>
+                        <td mat-cell *matCellDef="let user"> {{user.saldo}} </td>
                       </ng-container>
-
 
                       <tr mat-header-row *matHeaderRowDef="columnasTabla"></tr>
                       <tr mat-row *matRowDef="let row; columns: columnasTabla;"></tr>
 
                       <tr class="mat-row" *matNoDataRow>
-                        <td class="mat-cell" colspan="4">No hay datos qque coincidan con el filtro "{{input.value}}"</td>
+                        <td class="mat-cell" colspan="4">No hay datos que coincidan con el filtro "{{input.value}}"</td>
                       </tr>
 
                 </table>
@@ -94,4 +91,3 @@
         </div>
     </mat-card-content>
 </mat-card>
-

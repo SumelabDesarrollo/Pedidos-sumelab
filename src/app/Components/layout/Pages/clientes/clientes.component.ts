@@ -18,7 +18,7 @@ import Swal from 'sweetalert2';
   styleUrl: './clientes.component.css'
 })
 export class ClientesComponent implements OnInit, AfterViewInit{
-  columnasTabla: string[]  = ['Name','vat','xStudioNombreComercialSap','slClaCli','propertyPaymentTermId','email','creditLimit','userId','asesorCredito','callcenter','slActiveSap','stateId','observacion'];
+  columnasTabla: string[]  = ['nxtIdErp','vat','name','xStudioNombreComercialSap','slClaCli','propertyPaymentTermId','creditLimit','userId','asesorCredito','asesorCallcenter','estado','saldo','maximodias'];
   dataInicio: Clientes[] = [];
   dataListaClientes = new MatTableDataSource(this.dataInicio);
   @ViewChild(MatPaginator) paginacionTabla! : MatPaginator;

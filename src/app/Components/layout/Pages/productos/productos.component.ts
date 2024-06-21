@@ -18,7 +18,7 @@ import Swal from 'sweetalert2';
 })
 export class ProductosComponent implements OnInit, AfterViewInit{
   
-  columnasTabla: string[]  = ['display_name','sl_marca','supplier_difare_code','list_price','sl_product_pvp','virtual_available','taxes_id','acciones'];
+  columnasTabla: string[]  = ['nxtIdErp','name','listPrice','listPrice','slProductPvp','stock','taxesId','estado','slMarca','grupo','presentacion','fraccionador','acciones'];
   dataInicio: Productos[] = [];
   dataListaProductos = new MatTableDataSource(this.dataInicio);
   @ViewChild(MatPaginator) paginacionTabla! : MatPaginator;

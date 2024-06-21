@@ -30,8 +30,43 @@
 
                 <mat-grid-tile>
                     <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
+                        <mat-label class="transparent-label">Nombre Comercial</mat-label>
+                        <input matInput type="text" [value]="clienteSeleccionado?.xStudioNombreComercialSap" readonly>
+                    </mat-form-field>
+                </mat-grid-tile>
+
+                <mat-grid-tile>
+                    <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
                         <mat-label class="transparent-label">RUC</mat-label>
                         <input matInput type="text" [value]="clienteSeleccionado?.vat" readonly>
+                    </mat-form-field>
+                </mat-grid-tile>
+
+                <mat-grid-tile>
+                    <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
+                        <mat-label class="transparent-label">Asesor de Ventas</mat-label>
+                        <input matInput type="text" [value]="clienteSeleccionado?.userId" readonly>
+                    </mat-form-field>
+                </mat-grid-tile>
+
+                <mat-grid-tile>
+                    <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
+                        <mat-label class="transparent-label">Asesor de Credito</mat-label>
+                        <input matInput type="text" [value]="clienteSeleccionado?.asesorCredito" readonly>
+                    </mat-form-field>
+                </mat-grid-tile>
+
+                <mat-grid-tile>
+                    <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
+                        <mat-label class="transparent-label">Asesor de Call Center</mat-label>
+                        <input matInput type="text" [value]="clienteSeleccionado?.asesorCallcenter" readonly>
+                    </mat-form-field>
+                </mat-grid-tile>
+
+                <mat-grid-tile>
+                    <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
+                        <mat-label class="transparent-label">Saldo</mat-label>
+                        <input matInput type="text" [value]="clienteSeleccionado?.saldo" readonly>
                     </mat-form-field>
                 </mat-grid-tile>
 
@@ -41,10 +76,24 @@
                         <input matInput type="text" [value]="clienteSeleccionado?.slClaCli" readonly>
                     </mat-form-field>
                 </mat-grid-tile>
+
                 <mat-grid-tile>
                     <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
-                        <mat-label class="transparent-label">Nombre Comercial SAP</mat-label>
-                        <input matInput type="text" [value]="clienteSeleccionado?.xStudioNombreComercialSap" readonly>
+                        <mat-label class="transparent-label">Estado</mat-label>
+                        <input matInput type="text" [value]="clienteSeleccionado?.estado" readonly>
+                    </mat-form-field>
+                </mat-grid-tile>
+
+                <mat-grid-tile>
+                    <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
+                        <mat-label class="transparent-label">Unidad</mat-label>
+                        <input matInput type="text" [value]="clienteSeleccionado?.slClaCli" readonly>
+                    </mat-form-field>
+                </mat-grid-tile>
+                <mat-grid-tile>
+                    <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
+                        <mat-label class="transparent-label">Días Vencidos</mat-label>
+                        <input matInput type="text" [value]="clienteSeleccionado?.maximodias" readonly>
                     </mat-form-field>
                 </mat-grid-tile>
                 
@@ -54,24 +103,14 @@
                         <input matInput type="text" [value]="clienteSeleccionado?.slActiveSap === true ? 'Activo' : (clienteSeleccionado?.slActiveSap === false ? 'Desactivado' : clienteSeleccionado?.slActiveSap)" readonly>
                     </mat-form-field>
                 </mat-grid-tile>-->
-                <mat-grid-tile>
+                
+                <!--<mat-grid-tile>
                     <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
-                        <mat-label class="transparent-label">Asesor de Venta</mat-label>
-                        <input matInput type="text" [value]="clienteSeleccionado?.userId" readonly>
-                    </mat-form-field>
-                </mat-grid-tile>
-                <mat-grid-tile>
-                    <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
-                        <mat-label class="transparent-label">Lìmite de crédito</mat-label>
+                        <mat-label class="transparent-label">Límite de crédito</mat-label>
                         <input matInput type="text" [value]="clienteSeleccionado?.creditLimit" readonly>
                     </mat-form-field>
-                </mat-grid-tile>
-                <mat-grid-tile>
-                    <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
-                        <mat-label class="transparent-label">Correo electronico</mat-label>
-                        <input matInput type="text" [value]="clienteSeleccionado?.email" readonly>
-                    </mat-form-field>
-                </mat-grid-tile>
+                </mat-grid-tile>-->
+                
 
                 <mat-grid-tile>
                     <button mat-raised-button color="primary" style="width: 80%;" [disabled]="!clienteSeleccionado " (click)="abrirModalPedido()">

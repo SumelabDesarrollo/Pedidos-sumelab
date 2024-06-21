@@ -27,12 +27,14 @@ export class ModalPedidoComponent implements OnInit {
     this.formularioPedido = this.fb.group({
       producto: ['', Validators.required],
       cantidad: ['', [Validators.required, Validators.min(1)]],
+      nxtIdErp: [''],
+      listPrice: [''],
+      slProductPvp: [''],
       stock: [''], // Campo de solo lectura
-      slProductPvp: [''], // Campo de solo lectura
-      marca: [''], // Campo de solo lectura
-      supplierDifareCode:[''],
-      slProductPvf:[''],
-      impuestos:['']
+      taxesId: [''],
+      estado : [''],// Campo de solo lectura
+      slMarca: [''],
+      presentacion:['']
     });
 
     this._productoServicio.lista().subscribe({
@@ -83,12 +85,14 @@ export class ModalPedidoComponent implements OnInit {
     const producto = event.option.value;
     this.formularioPedido.patchValue({
       producto: producto,
-      stock: producto.stock,
+      nxtIdErp: producto.nxtIdErp,
+      listPrice: producto.listPrice,
       slProductPvp: producto.slProductPvp,
-      slProductPvf: producto.listPrice,
-      marca: producto.slMarca,
-      supplierDifareCode: producto.supplierDifareCode,
-      impuestos: producto.taxesId
+      stock: producto.stock,
+      taxesId: producto.taxesId,
+      slMarca: producto.slMarca,
+      estado: producto.estado,
+      presentacion: producto.presentacion
     });
   }
 

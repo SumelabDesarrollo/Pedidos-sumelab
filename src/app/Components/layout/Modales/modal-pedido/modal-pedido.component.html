@@ -24,22 +24,20 @@
                 </mat-form-field>
             </mat-grid-tile>
 
-            <!-- Campo de solo lectura: Disponible Virtual -->
             <mat-grid-tile>
                 <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
-                    <mat-label>Stock</mat-label>
-                    <input matInput type="text" formControlName="stock" readonly>
+                    <mat-label>Código</mat-label>
+                    <input matInput type="text" formControlName="nxtIdErp" readonly>
                 </mat-form-field>
             </mat-grid-tile>
 
-            <!-- Campo de solo lectura: Marca -->
+            <!-- Campo de solo lectura: Precio de venta a la farmacia -->
             <mat-grid-tile>
                 <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
-                    <mat-label>Marca</mat-label>
-                    <input matInput type="text" formControlName="marca" readonly>
+                    <mat-label>Precio de venta a la farmacia</mat-label>
+                    <input matInput type="text" formControlName="listPrice" readonly>
                 </mat-form-field>
             </mat-grid-tile>
-
 
             <!-- Campo de solo lectura: Precio de venta al publico -->
             <mat-grid-tile>
@@ -48,20 +46,44 @@
                     <input matInput type="text" formControlName="slProductPvp" readonly>
                 </mat-form-field>
             </mat-grid-tile>
-            <!-- Campo de solo lectura: Precio de venta a la farmacia -->
+
+            <!-- Campo de solo lectura: Disponible Virtual -->
             <mat-grid-tile>
                 <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
-                    <mat-label>Precio de venta a la farmacia</mat-label>
-                    <input matInput type="text" formControlName="slProductPvf" readonly>
+                    <mat-label>Stock</mat-label>
+                    <input matInput type="text" formControlName="stock" readonly>
                 </mat-form-field>
             </mat-grid-tile>
 
             <mat-grid-tile>
                 <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
                     <mat-label>Impuestos</mat-label>
-                    <input matInput type="text" formControlName="impuestos" readonly>
+                    <input matInput type="text" formControlName="taxesId" readonly>
                 </mat-form-field>
             </mat-grid-tile>
+
+            <mat-grid-tile>
+                <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
+                    <mat-label>Estado</mat-label>
+                    <input matInput type="text" formControlName="estado" readonly>
+                </mat-form-field>
+            </mat-grid-tile>
+
+            <!-- Campo de solo lectura: Marca -->
+            <mat-grid-tile>
+                <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
+                    <mat-label>Marca</mat-label>
+                    <input matInput type="text" formControlName="slMarca" readonly>
+                </mat-form-field>
+            </mat-grid-tile>
+
+            <mat-grid-tile>
+                <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
+                    <mat-label>Presentacion</mat-label>
+                    <input matInput type="text" formControlName="presentacion" readonly>
+                </mat-form-field>
+            </mat-grid-tile>
+
 
         </mat-grid-list>
     </form>

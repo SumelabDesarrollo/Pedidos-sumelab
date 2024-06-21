@@ -156,7 +156,7 @@ export class PedidosComponent implements OnInit {
                 idProducto: this.productoSeleccionado.idProducto,
                 descripcionProductos: this.productoSeleccionado.name,
                 incentivo: '10',
-                slProductPvf: String(_precio),
+                slProductPvf: '10',
                 slProductPvp: String(_precio),
                 qtyOrder: _cantidad, // Utilizar la cantidad seleccionada del formulario del modal
                 qtyBonus: 10,
@@ -283,50 +283,56 @@ export class PedidosComponent implements OnInit {
     
 
     abrirModalPedido(): void {
-    const dialogRef = this.dialog.open(ModalPedidoComponent, {
-        width: '500px',
-        data: { productos: this.listaProductosFiltro } // Pasar la lista de productos al modal
-    });
-
-    dialogRef.afterClosed().subscribe((data: { productoSeleccionado: Productos | undefined, cantidad: number }) => {
-        if (data && data.productoSeleccionado) {
-            const productoSeleccionado = data.productoSeleccionado;
-            const cantidad = data.cantidad;
-
-            const precioString = String(productoSeleccionado.slProductPvp); // Convertir a cadena de caracteres
-            const precio = parseFloat(precioString);
-            if (!isNaN(precio)) { // Verificar si es un número válido
-                const totalProducto = precio * cantidad;
-                this.totalPagar += totalProducto;
-
-                this.listaProductosParaPedidos.push({
-                    iddetallepedido: 0,
-                    idpedido: 0,
-                    idProducto: productoSeleccionado.idProducto,
-                    descripcionProductos: productoSeleccionado.name,
-                    incentivo: '10',
-                    slProductPvf: parseFloat(precio.toFixed(0)).toString(), // Convertir a cadena de caracteres
-                    slProductPvp: parseFloat(precio.toFixed(0)).toString(), // Convertir a cadena de caracteres
-                    qtyOrder: cantidad, // Utilizar la cantidad seleccionada del formulario del modal
-                    qtyBonus: 10,
-                    discount: '10',
-                    productUomQty: String(cantidad), // Utilizar la cantidad seleccionada del formulario del modal
-                    slVirtualAvailable: String(productoSeleccionado.stock),
-                    priceUnit: parseFloat(precio.toFixed(0)).toString(), // Convertir a cadena de caracteres
-                    amountTax: String(productoSeleccionado.taxesId),
-                    slSubtotal: totalProducto.toFixed(0),
-                    amountTotal: totalProducto.toFixed(0),
-                    iva: 0,
-                    final: '10'
-                });
-
-                this.datosDetallePedidos = new MatTableDataSource(this.listaProductosParaPedidos);
-            } else {
-                console.error('El precio del producto no es un número válido');
+        const dialogRef = this.dialog.open(ModalPedidoComponent, {
+            width: '500px',
+            data: { productos: this.listaProductosFiltro } // Pasar la lista de productos al modal
+        });
+    
+        dialogRef.afterClosed().subscribe((data: { productoSeleccionado: Productos | undefined, cantidad: number }) => {
+            if (data && data.productoSeleccionado) {
+                const productoSeleccionado = data.productoSeleccionado;
+                const cantidad = data.cantidad;
+    
+                const precioString = String(productoSeleccionado.slProductPvp); // Convertir a cadena de caracteres
+                const precio = parseFloat(precioString);
+                if (!isNaN(precio)) { // Verificar si es un número válido
+                    const totalProducto = precio * cantidad;
+                    this.totalPagar += totalProducto;
+    
+                    const _precioList = parseFloat(String(productoSeleccionado.listPrice).replace(',', '.')); // Convertir a número
+                    const _precioPvp = parseFloat(String(productoSeleccionado.slProductPvp).replace(',', '.')); // Convertir a número
+                    const subtotal = _precioPvp * cantidad; // Calcular el subtotal con decimales
+    
+                    this.listaProductosParaPedidos.push({
+                        iddetallepedido: 0,
+                        idpedido: 0,
+                        idProducto: productoSeleccionado.idProducto,
+                        descripcionProductos: productoSeleccionado.name,
+                        incentivo: '10',
+                        slProductPvf: String(_precioList), // Asignar listPrice a slProductPvf
+                        slProductPvp: String(_precioPvp), // Asignar slProductPvp a slProductPvp
+                        qtyOrder: cantidad, // Utilizar la cantidad seleccionada del formulario del modal
+                        qtyBonus: 10,
+                        discount: '10',
+                        productUomQty: String(cantidad), // Utilizar la cantidad seleccionada del formulario del modal
+                        slVirtualAvailable: String(productoSeleccionado.stock),
+                        priceUnit: String(_precioPvp), // Convertir a cadena de caracteres con dos decimales
+                        amountTax: String(productoSeleccionado.taxesId),
+                        slSubtotal: subtotal.toFixed(2), // Guardar el subtotal con dos decimales
+                        amountTotal: totalProducto.toFixed(2),
+                        iva: 0,
+                        final: '10'
+                    });
+    
+                    this.datosDetallePedidos = new MatTableDataSource(this.listaProductosParaPedidos);
+                } else {
+                    console.error('El precio del producto no es un número válido');
+                }
             }
-        }
-    });
+        });
     }
+    
+    
 
     confirmarPedidos() {
         if (this.listaProductosParaPedidos.length > 0 && this.clienteSeleccionado) {

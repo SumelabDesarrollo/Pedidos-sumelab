@@ -13,8 +13,6 @@ export interface Productos {
     grupo:string,
     presentacion:String,
     fraccionador:String
-    
-    
-    
+     
 
 }

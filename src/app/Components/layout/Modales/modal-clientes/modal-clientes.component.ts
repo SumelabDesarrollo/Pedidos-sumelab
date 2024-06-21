@@ -55,7 +55,7 @@ export class ModalClientesComponent implements OnInit{
         UserId:this.datosClientes.userId,
         AsesorCredito:this.datosClientes.asesorCredito,
         AsesorCallcenter:this.datosClientes.asesorCallcenter,
-        slActiveSap:this.datosClientes.slActiveSap,
+        slActiveSap:this.datosClientes.estado,
         StateId:this.datosClientes.stateId,
         Observacion:this.datosClientes.observacion
 

@@ -6,16 +6,18 @@ export interface Clientes {
     name:string,
     xStudioNombreComercialSap:string,
     slClaCli:string,
-    propertyPaymentTermId:number,
+    propertyPaymentTermId:string,
     email:string,
     creditLimit:string,
     userId:string,
     asesorCredito:string,   
-    asesorCallcenter:boolean,
-    estado:boolean, 
-    slActiveSap:boolean,
-    stateId:string,  
+    asesorCallcenter:string,
+    estado:string, 
+    stateId:string,
     observacion:string,
-    iddireccion:number
+    iddireccion:number,
+    saldo:number,
+    maximodias:number
+
 }
 

@@ -1,0 +1,16 @@
+FROM node:20-alpine AS build   
+WORKDIR /app
+
+# Copiar package.json y package-lock.json
+COPY package*.json ./
+
+# Instalar dependencias
+RUN npm install
+
+# Copiar el resto de los archivos y construir la aplicación
+COPY . .
+RUN npm run build --prod
+
+# Establecer la imagen base para la fase de producción
+FROM nginx:alpine
+COPY --from=build /app/dist/sistema-pedidos-sumelab /usr/share/nginx/html

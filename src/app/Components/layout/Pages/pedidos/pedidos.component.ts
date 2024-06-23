@@ -32,6 +32,9 @@ export class PedidosComponent implements OnInit {
     productoSeleccionado!: Productos;
     clienteSeleccionado: Clientes | null = null;
     totalPagar: number = 0;
+    amountTotalModal: number = 0;
+    interes: string ='';
+    total: number =0;
     formularioProductoPedidos: FormGroup;
     columnasTabla: string[] = ['Producto','Incentivo', 'PVF', 'PVP', 'CantidadOrdenada', 'CantidadBonificada', 'PorcentajeDescuento', 'Cantidad', 'Stock', 'PrecioUnitario', 'slVirtualAvailable','Subtotal', 'Acciones'];
     datosDetallePedidos = new MatTableDataSource(this.listaProductosParaPedidos);
@@ -166,7 +169,7 @@ export class PedidosComponent implements OnInit {
                 priceUnit: _precio.toFixed(0),
                 amountTax: '10',
                 slSubtotal: String(_total),
-                amountTotal: String(_total),
+                amountTotal: '0',
                 iva: 0,
                 final: ''
             });
@@ -193,78 +196,7 @@ export class PedidosComponent implements OnInit {
     }
 
 
-    registrarPedidos() {
-        if (this.listaProductosParaPedidos.length > 0 && this.clienteSeleccionado) {
-            this.bloquearBotonRegistrar = true;
-            // Obtener la fecha actual
-            const today = new Date();
-
-            // Obtener el día, mes y año
-            const day = today.getDate();
-            const month = today.getMonth() + 1; // Los meses van de 0 a 11, por lo que sumamos 1
-            const year = today.getFullYear();
-
-            // Formatear el día y el mes para asegurarse de que tengan dos dígitos (agregar ceros iniciales si es necesario)
-            const formattedDay = (day < 10 ? '0' : '') + day;
-            const formattedMonth = (month < 10 ? '0' : '') + month;
-
-            // Construir la fecha en el formato deseado
-            const formattedDate = `${formattedDay}/${formattedMonth}/${year}`;
-
-
-            const request: Pedidos = {
-                idcliente: this.clienteSeleccionado.idcliente,
-                descripcionClientes: this.clienteSeleccionado.name,
-                name: 'Nuevo Pedido', // Asigna un nombre adecuado al pedido
-                fechaCreacion: formattedDate,
-                dateOrder: formattedDate,
-                statusCreatePurchaseOrder: true,
-                userId: this.clienteSeleccionado.userId,
-                origenVenta: 'Online',
-                amountTotal: String(this.totalPagar.toFixed(0)),
-                nxtSync: 'sincronización',
-                stateErp: 'activo',
-                feria: 'feria2',
-                amountUntaxed: '10',
-                linesCountInteger: 2,
-                createUid: false,
-                estado: 'Presupuesto',
-                detallepedidos: this.listaProductosParaPedidos,
-                idpedido: 0,
-            };
-
-            console.log('Registrando pedido:', request);
-
-            this._pedidosService.registrar(request).subscribe({
-                next: (response) => {
-                    console.log('Respuesta del servidor:', response);
-                    if (response.status) {
-                        this.totalPagar = 0.00;
-                        this.listaProductosParaPedidos = [];
-                        this.datosDetallePedidos = new MatTableDataSource(this.listaProductosParaPedidos);
-
-                        // Restablecer el formulario completo
-                        this.formularioProductoPedidos.reset();
-                        this.clienteSeleccionado = null;
-
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Pedido Registrado'
-                        });
-                    } else {
-                        this._utilidadService.mostrarAlerta('No se pudo registrar el pedido', 'Error');
-                    }
-                },
-                error: (e) => {
-                    console.error('Error al registrar el pedido', e);
-                }
-            });
-
-            this.bloquearBotonRegistrar = false;
-        } else {
-            this._utilidadService.mostrarAlerta('Debe agregar productos y seleccionar un cliente', 'Error');
-        }
-    }
+    
 
     getTotal(): number {
         return this.listaProductosParaPedidos.map(t => parseFloat(t.slSubtotal)).reduce((acc, value) => acc + value, 0);
@@ -274,11 +206,11 @@ export class PedidosComponent implements OnInit {
     }
 
     getTotalTax(): number {
-        return this.listaProductosParaPedidos.reduce((acc, item) => acc + parseFloat(item.amountTax), 0);
+        return this.listaProductosParaPedidos.reduce((acc, item) => acc + parseFloat(item.slSubtotal), 0);
     }
 
     getTotalAmount(): number {
-        return this.listaProductosParaPedidos.reduce((acc, item) => acc + parseFloat(item.amountTotal), 0);
+        return this.listaProductosParaPedidos.reduce((acc, item) => acc + parseFloat(item.slSubtotal), 0);
     }
     
 
@@ -301,7 +233,7 @@ export class PedidosComponent implements OnInit {
     
                     const _precioList = parseFloat(String(productoSeleccionado.listPrice).replace(',', '.')); // Convertir a número
                     const _precioPvp = parseFloat(String(productoSeleccionado.slProductPvp).replace(',', '.')); // Convertir a número
-                    const subtotal = _precioPvp * cantidad; // Calcular el subtotal con decimales
+                    const subtotal = _precioPvp * cantidad;
     
                     this.listaProductosParaPedidos.push({
                         iddetallepedido: 0,
@@ -316,15 +248,19 @@ export class PedidosComponent implements OnInit {
                         discount: '10',
                         productUomQty: String(cantidad), // Utilizar la cantidad seleccionada del formulario del modal
                         slVirtualAvailable: String(productoSeleccionado.stock),
-                        priceUnit: String(_precioPvp), // Convertir a cadena de caracteres con dos decimales
+                        priceUnit: _precioPvp.toFixed(2).toString(), // Convertir a cadena de caracteres con dos decimales
                         amountTax: String(productoSeleccionado.taxesId),
                         slSubtotal: subtotal.toFixed(2), // Guardar el subtotal con dos decimales
-                        amountTotal: totalProducto.toFixed(2),
+                        amountTotal: subtotal.toFixed(2),
                         iva: 0,
                         final: '10'
                     });
-    
+                    
                     this.datosDetallePedidos = new MatTableDataSource(this.listaProductosParaPedidos);
+
+                    this.amountTotalModal = subtotal;
+                    this.interes= productoSeleccionado.taxesId;
+
                 } else {
                     console.error('El precio del producto no es un número válido');
                 }
@@ -332,19 +268,23 @@ export class PedidosComponent implements OnInit {
         });
     }
     
-    
 
-    confirmarPedidos() {
+    registrarPedidos() {
         if (this.listaProductosParaPedidos.length > 0 && this.clienteSeleccionado) {
             this.bloquearBotonRegistrar = true;
+    
+            // Obtener la fecha actual
             const today = new Date();
             const day = today.getDate();
-            const month = today.getMonth() + 1;
+            const month = today.getMonth() + 1; // Los meses van de 0 a 11, por lo que sumamos 1
             const year = today.getFullYear();
             const formattedDay = (day < 10 ? '0' : '') + day;
             const formattedMonth = (month < 10 ? '0' : '') + month;
             const formattedDate = `${formattedDay}/${formattedMonth}/${year}`;
-
+            const _total = this.getTotalAmount();
+    
+            const amountTotalFormatted = _total.toFixed(2).replace(',', '.');
+    
             const request: Pedidos = {
                 idcliente: this.clienteSeleccionado.idcliente,
                 descripcionClientes: this.clienteSeleccionado.name,
@@ -353,19 +293,90 @@ export class PedidosComponent implements OnInit {
                 dateOrder: formattedDate,
                 statusCreatePurchaseOrder: true,
                 userId: this.clienteSeleccionado.userId,
-                origenVenta: 'Online',
-                amountTotal: String(this.totalPagar.toFixed(0)),
+                origenVenta: 'Call center',
+                amountTotal: amountTotalFormatted,
                 nxtSync: 'sincronización',
                 stateErp: 'activo',
                 feria: 'feria2',
-                amountUntaxed: '10',
+                amountUntaxed: this.interes,
+                linesCountInteger: 2,
+                createUid: false,
+                estado: 'Presupuesto',
+                detallepedidos: this.listaProductosParaPedidos,
+                idpedido: 0,
+            };
+    
+            console.log('Registrando pedido:', request);
+    
+            this._pedidosService.registrar(request).subscribe({
+                next: (response) => {
+                    console.log('Respuesta del servidor:', response);
+                    if (response.status) {
+                        this.totalPagar = 0.00;
+                        this.listaProductosParaPedidos = [];
+                        this.datosDetallePedidos = new MatTableDataSource(this.listaProductosParaPedidos);
+                        this.formularioProductoPedidos.reset();
+                        this.clienteSeleccionado = null;
+    
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Pedido Registrado'
+                        });
+                    } else {
+                        this._utilidadService.mostrarAlerta('No se pudo registrar el pedido', 'Error');
+                    }
+                },
+                error: (e) => {
+                    console.error('Error al registrar el pedido', e);
+                }
+            });
+    
+            this.bloquearBotonRegistrar = false;
+        } else {
+            this._utilidadService.mostrarAlerta('Debe agregar productos y seleccionar un cliente', 'Error');
+        }
+    }
+    
+    confirmarPedidos() {
+        if (this.listaProductosParaPedidos.length > 0 && this.clienteSeleccionado) {
+            this.bloquearBotonRegistrar = true;
+    
+            // Obtener la fecha actual
+            const today = new Date();
+            const day = today.getDate();
+            const month = today.getMonth() + 1; // Los meses van de 0 a 11, por lo que sumamos 1
+            const year = today.getFullYear();
+            const formattedDay = (day < 10 ? '0' : '') + day;
+            const formattedMonth = (month < 10 ? '0' : '') + month;
+            const formattedDate = `${formattedDay}/${formattedMonth}/${year}`;
+    
+            const _total = this.getTotalAmount();
+    
+            const amountTotalFormatted = _total.toFixed(2).replace(',', '.');
+    
+            const request: Pedidos = {
+                idcliente: this.clienteSeleccionado.idcliente,
+                descripcionClientes: this.clienteSeleccionado.name,
+                name: 'Nuevo Pedido',
+                fechaCreacion: formattedDate,
+                dateOrder: formattedDate,
+                statusCreatePurchaseOrder: true,
+                userId: this.clienteSeleccionado.userId,
+                origenVenta: 'Call center',
+                amountTotal: amountTotalFormatted,
+                nxtSync: 'sincronización',
+                stateErp: 'activo',
+                feria: 'feria2',
+                amountUntaxed: this.interes,
                 linesCountInteger: 2,
                 createUid: false,
                 estado: 'Pedido de venta', // Cambiado a "Pedido de venta"
                 detallepedidos: this.listaProductosParaPedidos,
                 idpedido: 0,
             };
-
+    
+            console.log('Confirmando pedido:', request);
+    
             this._pedidosService.registrar(request).subscribe({
                 next: (response) => {
                     if (response.status) {
@@ -374,7 +385,7 @@ export class PedidosComponent implements OnInit {
                         this.datosDetallePedidos = new MatTableDataSource(this.listaProductosParaPedidos);
                         this.formularioProductoPedidos.reset();
                         this.clienteSeleccionado = null;
-
+    
                         Swal.fire({
                             icon: 'success',
                             title: 'Pedido Confirmado'
@@ -387,12 +398,13 @@ export class PedidosComponent implements OnInit {
                     console.error('Error al confirmar el pedido', e);
                 }
             });
-
+    
             this.bloquearBotonRegistrar = false;
         } else {
             this._utilidadService.mostrarAlerta('Debe agregar productos y seleccionar un cliente', 'Error');
         }
     }
+    
 
 
 

@@ -77,7 +77,8 @@
               "buildTarget": "SistemaPedidosSumelab:build:production"
             },
             "development": {
-              "buildTarget": "SistemaPedidosSumelab:build:development"
+              "buildTarget": "SistemaPedidosSumelab:build:development",
+              "port": 4300
             }
           },
           "defaultConfiguration": "development"

@@ -353,6 +353,15 @@ export class PedidosComponent implements OnInit {
                 return;
             }
     
+            // Verificar si todos los productos tienen slVirtualAvailable mayor a 0
+            const productosSinStock = this.listaProductosParaPedidos.filter(producto => parseFloat(producto.slVirtualAvailable) <= 0);
+            if (productosSinStock.length > 0) {
+                const productosSinStockNombres = productosSinStock.map(producto => producto.descripcionProductos).join(', ');
+                this._utilidadService.mostrarAlerta(`Los siguientes productos no tienen stock disponible: ${productosSinStockNombres}`, 'Error');
+                this.bloquearBotonRegistrar = false;
+                return;
+            }
+    
             // Obtener la fecha actual
             const today = new Date();
             const day = today.getDate();
@@ -417,6 +426,7 @@ export class PedidosComponent implements OnInit {
             this._utilidadService.mostrarAlerta('Debe agregar productos y seleccionar un cliente', 'Error');
         }
     }
+    
     
     
 

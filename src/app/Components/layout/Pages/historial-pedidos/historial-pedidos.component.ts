@@ -190,22 +190,47 @@ export class HistorialPedidosComponent implements OnInit, AfterViewInit {
   }
 
   actualizarEstadoPedido(pedido: Pedidos, nuevoEstado: string): void {
-    this._pedidoServicio.actualizarEstado(pedido.idpedido, nuevoEstado).subscribe({
-      next: (data: ResponseApi) => {
-        if (data.status) {
-          this._utilidadServicio.mostrarAlerta("Estado actualizado exitosamente", "Hecho");
-          this.buscarPedidos();
-        } else {
-          this._utilidadServicio.mostrarAlerta("No se pudo actualizar el estado", "Error");
-        }
-      },
-      error: (e: any) => {
-        console.error(e);
-        this._utilidadServicio.mostrarAlerta("Hubo un error al actualizar el estado", "Error");
+    // Buscar el cliente asociado al pedido
+    const cliente = this.listaClientes.find(c => c.idcliente === pedido.idcliente);
+  
+    // Verificar las condiciones del cliente
+    if (
+      cliente?.estado === 'ACTIVO' &&
+      cliente?.maximodias < 5 &&
+      cliente?.saldo < parseFloat(cliente.creditLimit)
+    ) {
+      // Verificar también las condiciones del detalle de pedidos
+      const detallesInvalidos = pedido.detallepedidos.filter(detalle => parseFloat(detalle.slVirtualAvailable) <= 0);
+  
+      if (detallesInvalidos.length === 0) {
+        // Todas las condiciones se cumplen, proceder con la actualización del estado
+        this._pedidoServicio.actualizarEstado(pedido.idpedido, nuevoEstado).subscribe({
+          next: (data: ResponseApi) => {
+            if (data.status) {
+              this._utilidadServicio.mostrarAlerta("Estado actualizado exitosamente", "Hecho");
+              this.buscarPedidos();
+            } else {
+              this._utilidadServicio.mostrarAlerta("No se pudo actualizar el estado", "Error");
+            }
+          },
+          error: (e: any) => {
+            console.error(e);
+            this._utilidadServicio.mostrarAlerta("Hubo un error al actualizar el estado", "Error");
+          }
+        });
+      } else {
+        // Mostrar mensaje de error con los productos sin stock
+        const productosSinStock = detallesInvalidos.map(detalle => detalle.descripcionProductos);
+        const mensaje = `No se pueden cumplir las condiciones para actualizar el estado del pedido. Productos sin stock: ${productosSinStock.join(', ')}`;
+        this._utilidadServicio.mostrarAlerta(mensaje, "Error");
       }
-    });
+    } else {
+      // Mostrar mensaje de error si no se cumplen las condiciones del cliente
+      this._utilidadServicio.mostrarAlerta("No se cumple con lo requisitos para confirmar la orden:"+"  "+"Estado Cliente:"+cliente?.estado+"   "+"Días Vencidos:"+cliente?.maximodias+"   "+"Saldo:"+cliente?.saldo, "Error");
+    }
   }
-
+  
+  
 
 
   

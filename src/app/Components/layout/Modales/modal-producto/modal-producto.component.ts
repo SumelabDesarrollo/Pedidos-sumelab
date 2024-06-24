@@ -77,7 +77,7 @@ export class ModalProductoComponent implements OnInit{
       slProductPvp: this.formularioProductos.value.slProductPvp,
       stock: this.formularioProductos.value.stock,
       taxesId: this.formularioProductos.value.taxesId,
-      estado: false,
+      estado: "Desactivado",
       slMarca: this.formularioProductos.value.sl_marca,
       nxtIdErp: '',
       grupo: '',

@@ -40,12 +40,14 @@ export class ModalPedidoComponent implements OnInit {
     this._productoServicio.lista().subscribe({
       next: (data) => {
         if (data.status) {
-          this.listaProductos = data.value;
-          this.listaProductosFiltrados = [...this.listaProductos];
+          const lista = data.value as Productos[];
+          this.listaProductos = lista.filter(p => p.estado === 'ACTIVO');
+          this.listaProductosFiltrados = lista.filter(p => p.estado === 'ACTIVO');
         }
       },
-      error: (e) => { }
+      error: (e) => { console.error('Error al obtener la lista de productos', e); }
     });
+    
   }
 
   ngOnInit(): void {

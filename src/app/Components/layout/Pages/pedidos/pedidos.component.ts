@@ -58,7 +58,7 @@ export class PedidosComponent implements OnInit {
             next: (data) => {
                 if (data.status) {
                     const lista = data.value as Productos[];
-                    this.listaProductos = lista.filter(p => p.stock > 0);
+                    this.listaProductos = lista.filter(p => parseInt(p.stock, 10) > 0);
                 }
             },
             error: (e) => { console.error('Error al obtener la lista de productos', e); }
@@ -341,6 +341,18 @@ export class PedidosComponent implements OnInit {
         if (this.listaProductosParaPedidos.length > 0 && this.clienteSeleccionado) {
             this.bloquearBotonRegistrar = true;
     
+            // Verificar las condiciones adicionales del cliente
+            if (
+                this.clienteSeleccionado.estado !== 'ACTIVO' ||
+                this.clienteSeleccionado.maximodias >= 5 ||
+                parseFloat(this.clienteSeleccionado.saldo.toString()) >= parseFloat(this.clienteSeleccionado.creditLimit)
+            ) {
+                // Mostrar mensaje de error y no confirmar el pedido
+                this._utilidadService.mostrarAlerta('El cliente no cumple con los requisitos para confirmar el pedido.', 'Error');
+                this.bloquearBotonRegistrar = false;
+                return;
+            }
+    
             // Obtener la fecha actual
             const today = new Date();
             const day = today.getDate();
@@ -351,7 +363,6 @@ export class PedidosComponent implements OnInit {
             const formattedDate = `${formattedDay}/${formattedMonth}/${year}`;
     
             const _total = this.getTotalAmount();
-    
             const amountTotalFormatted = _total.toFixed(2).replace(',', '.');
     
             const request: Pedidos = {
@@ -396,14 +407,17 @@ export class PedidosComponent implements OnInit {
                 },
                 error: (e) => {
                     console.error('Error al confirmar el pedido', e);
+                },
+                complete: () => {
+                    this.bloquearBotonRegistrar = false;
                 }
             });
     
-            this.bloquearBotonRegistrar = false;
         } else {
             this._utilidadService.mostrarAlerta('Debe agregar productos y seleccionar un cliente', 'Error');
         }
     }
+    
     
 
 

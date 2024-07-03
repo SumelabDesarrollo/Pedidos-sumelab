@@ -30,6 +30,7 @@ import { ModalClientesComponent } from './Modales/modal-clientes/modal-clientes.
 import { ModalDetallePedidoComponent } from './Modales/modal-detalle-pedido/modal-detalle-pedido.component';
 import { ModalPedidoComponent } from './Modales/modal-pedido/modal-pedido.component';
 import { ModalEditarPedidoComponent } from './Modales/modal-editar-pedido/modal-editar-pedido.component';
+import { ScrollingModule } from '@angular/cdk/scrolling'; // Importar ScrollingModule
 
 @NgModule({
   declarations: [
@@ -63,7 +64,8 @@ import { ModalEditarPedidoComponent } from './Modales/modal-editar-pedido/modal-
     MatCardModule,
     MatGridListModule,
     MatTableModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    ScrollingModule, // Agregar ScrollingModule aquí
   ]
 })
 export class LayoutModule { }

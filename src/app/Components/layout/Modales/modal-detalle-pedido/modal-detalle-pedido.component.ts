@@ -19,7 +19,7 @@ export class ModalDetallePedidoComponent implements OnInit {
   Producto: string = "";
   Total: string = "";
   detallepedido: DetallePedidos[] = [];
-  columnasTabla: string[] = ["Producto","Incentivo","PVF","PVP", "Cantidad","CantidadB","Porcentaje", "Stock","PrecioUnitario","SubTotal","Interes","Total"];
+  columnasTabla: string[] = ["Producto", "Incentivo", "PVF", "PVP", "Cantidad", "CantidadB", "Porcentaje", "Stock", "PrecioUnitario", "SubTotal", "Interes", "Total"];
   listaProductos: Productos[] = [];
 
   constructor(
@@ -31,18 +31,18 @@ export class ModalDetallePedidoComponent implements OnInit {
     this.Total = _pedido.amountTotal || '';
     this.detallepedido = _pedido.detallepedidos || [];  // Verifica que _pedido.detallepedidos tenga datos válidos
   }
-  
-  
+
+
 
   ngOnInit(): void {
     this.detallepedido = this._pedido.detallepedidos || [];
     this.cargarProductos();
   }
-  
-  
+
+
 
   cargarProductos(): void {
-    this.productosService.lista().subscribe({
+    this.productosService.listaTodos().subscribe({
       next: (data: ResponseApi) => {
         console.log('Datos de productos recibidos:', data);
         if (data.status) {
@@ -57,8 +57,8 @@ export class ModalDetallePedidoComponent implements OnInit {
       }
     });
   }
-  
-  
+
+
 
   asociarNombresProductos(): void {
     console.log('this.listaProductos:', this.listaProductos);
@@ -70,6 +70,6 @@ export class ModalDetallePedidoComponent implements OnInit {
       };
     });
   }
-  
-  
+
+
 }

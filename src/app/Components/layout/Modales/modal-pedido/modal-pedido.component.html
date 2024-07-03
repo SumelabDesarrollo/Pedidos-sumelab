@@ -7,7 +7,7 @@
                 <mat-form-field class="full-width" appearance="fill">
                     <mat-label>Producto</mat-label>
                     <input matInput type="text" placeholder="Buscar..." formControlName="producto"
-                        [matAutocomplete]="auto" >
+                        [matAutocomplete]="auto" #searchInput>
                     <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete"
                         (optionSelected)="productosParaPedido($event)" [displayWith]="mostrarProductos">
                         <mat-option *ngFor="let option of listaProductosFiltrados" [value]="option">
@@ -83,8 +83,6 @@
                     <input matInput type="text" formControlName="presentacion" readonly>
                 </mat-form-field>
             </mat-grid-tile>
-
-
         </mat-grid-list>
     </form>
 </mat-dialog-content>
@@ -95,3 +93,5 @@
         {{ datosPedido ? 'Agregar' : 'Guardar' }}
     </button>
 </mat-dialog-actions>
+
+<mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>

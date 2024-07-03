@@ -1,9 +1,10 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Productos } from '../../../../Interfaces/productos';
 import { ProductosService } from '../../../../Services/productos.service';
 import { UtilidadService } from '../../../../Reutilizable/utilidad.service';
+import { MatPaginator } from '@angular/material/paginator';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
@@ -16,6 +17,12 @@ export class ModalPedidoComponent implements OnInit {
   formularioPedido: FormGroup;
   listaProductos: Productos[] = [];
   listaProductosFiltrados: Productos[] = [];
+  page: number = 1;
+  pageSize: number = 10;
+  search: string = '';
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild('searchInput') searchInput!: ElementRef;
 
   constructor(
     private modalActual: MatDialogRef<ModalPedidoComponent>,
@@ -37,17 +44,7 @@ export class ModalPedidoComponent implements OnInit {
       presentacion:['']
     });
 
-    this._productoServicio.lista().subscribe({
-      next: (data) => {
-        if (data.status) {
-          const lista = data.value as Productos[];
-          this.listaProductos = lista.filter(p => p.estado === 'ACTIVO');
-          this.listaProductosFiltrados = lista.filter(p => p.estado === 'ACTIVO');
-        }
-      },
-      error: (e) => { console.error('Error al obtener la lista de productos', e); }
-    });
-    
+    this.cargarProductos();
   }
 
   ngOnInit(): void {
@@ -65,18 +62,29 @@ export class ModalPedidoComponent implements OnInit {
         distinctUntilChanged()
       )
       .subscribe(value => {
-        this.filtrarProductos(value);
+        this.search = value;
+        this.page = 1; // Reiniciar la paginación al buscar
+        this.cargarProductos();
       });
+
+    if (this.paginator) {
+      this.paginator.page.subscribe(() => {
+        this.page = this.paginator.pageIndex + 1;
+        this.cargarProductos();
+      });
+    }
   }
 
-  filtrarProductos(value: any): void {
-    if (typeof value === 'string') {
-      this.listaProductosFiltrados = this.listaProductos.filter(producto =>
-        producto.name.toLowerCase().includes(value.toLowerCase())
-      );
-    } else {
-      console.error('Filter value is not a string:', value);
-    }
+  cargarProductos(): void {
+    this._productoServicio.lista(this.page, this.pageSize, this.search).subscribe({
+      next: (data) => {
+        if (data.status) {
+          this.listaProductos = data.value as Productos[];
+          this.listaProductosFiltrados = this.listaProductos.filter(p => p.estado === 'ACTIVO'); // Filtrar solo los productos activos
+        }
+      },
+      error: (e) => { console.error('Error al obtener la lista de productos', e); }
+    });
   }
 
   mostrarProductos(producto: Productos): string {

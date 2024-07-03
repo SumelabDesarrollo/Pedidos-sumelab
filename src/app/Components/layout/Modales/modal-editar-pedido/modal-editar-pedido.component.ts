@@ -20,6 +20,7 @@ export class ModalEditarPedidoComponent implements OnInit {
   listaClientes: Clientes[] = [];
   listaProductos: Productos[] = [];
 
+
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: Pedidos,
     private dialogRef: MatDialogRef<ModalEditarPedidoComponent>,
@@ -36,17 +37,8 @@ export class ModalEditarPedidoComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.clientesService.lista().subscribe((response: ResponseApi) => {
-      if (response.status) {
-        this.listaClientes = response.value;
-      }
-    });
-
-    this.productosService.lista().subscribe((response: ResponseApi) => {
-      if (response.status) {
-        this.listaProductos = response.value;
-      }
-    });
+    this.cargarClientes();
+    this.cargarProductos();
 
     this.data.detallepedidos.forEach(detalle => {
       this.detallesPedidos.push(this.fb.group({
@@ -58,6 +50,22 @@ export class ModalEditarPedidoComponent implements OnInit {
         slSubtotal: [detalle.slSubtotal],
         // Agrega aquí otros campos que no se deben editar
       }));
+    });
+  }
+
+  cargarClientes() {
+    this.clientesService.listaTodos().subscribe((response: ResponseApi) => {
+      if (response.status) {
+        this.listaClientes = response.value;
+      }
+    });
+  }
+
+  cargarProductos() {
+    this.productosService.listaTodos().subscribe((response: ResponseApi) => {
+      if (response.status) {
+        this.listaProductos = response.value;
+      }
     });
   }
 

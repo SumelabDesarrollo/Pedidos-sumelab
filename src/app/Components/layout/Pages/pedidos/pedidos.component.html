@@ -11,22 +11,24 @@
         <form [formGroup]="formularioProductoPedidos" (ngSubmit)="agregarProductosParaPedidos()">
 
             <mat-grid-list cols="4" rowHeight="80px">
-                
 
+
+                <!-- Campo para seleccionar cliente -->
                 <!-- Campo para seleccionar cliente -->
                 <mat-grid-tile [colspan]="2">
                     <mat-form-field class="full-width" appearance="fill">
                         <mat-label>Cliente</mat-label>
-                        <input matInput type="text" placeholder="Buscar.." formControlName="Cliente" [matAutocomplete]="autoCliente">
-                        <mat-autocomplete autoActiveFirstOption #autoCliente="matAutocomplete" 
-                            (optionSelected)="clientesParaPedido($event)" 
-                            [displayWith]="mostrarClientes">
+                        <input matInput type="text" placeholder="Buscar.." formControlName="Cliente"
+                            (input)="aplicarFiltroTable($event)" [matAutocomplete]="autoCliente">
+                        <mat-autocomplete autoActiveFirstOption #autoCliente="matAutocomplete"
+                            (optionSelected)="clientesParaPedido($event)" [displayWith]="mostrarClientes">
                             <mat-option *ngFor="let cliente of listaClientesFiltro" [value]="cliente">
                                 {{ cliente.name }}
                             </mat-option>
                         </mat-autocomplete>
                     </mat-form-field>
                 </mat-grid-tile>
+
 
                 <mat-grid-tile>
                     <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
@@ -96,31 +98,32 @@
                         <input matInput type="text" [value]="clienteSeleccionado?.maximodias" readonly>
                     </mat-form-field>
                 </mat-grid-tile>
-                
+
                 <!--<mat-grid-tile>
                     <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
                         <mat-label>Estado SAP</mat-label>
                         <input matInput type="text" [value]="clienteSeleccionado?.slActiveSap === true ? 'Activo' : (clienteSeleccionado?.slActiveSap === false ? 'Desactivado' : clienteSeleccionado?.slActiveSap)" readonly>
                     </mat-form-field>
                 </mat-grid-tile>-->
-                
+
                 <!--<mat-grid-tile>
                     <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
                         <mat-label class="transparent-label">Límite de crédito</mat-label>
                         <input matInput type="text" [value]="clienteSeleccionado?.creditLimit" readonly>
                     </mat-form-field>
                 </mat-grid-tile>-->
-                
+
 
                 <mat-grid-tile>
-                    <button mat-raised-button color="primary" style="width: 80%;" [disabled]="!clienteSeleccionado " (click)="abrirModalPedido()">
-                      <mat-icon>add</mat-icon> Añadir Productos
+                    <button mat-raised-button color="primary" style="width: 80%;" [disabled]="!clienteSeleccionado "
+                        (click)="abrirModalPedido()">
+                        <mat-icon>add</mat-icon> Añadir Productos
                     </button>
                 </mat-grid-tile>
-                  
+
                 <mat-grid-tile>
-                    <button mat-raised-button color="accent" style="width: 80%;" >
-                       Total : ${{totalPagar.toFixed(2)}} 
+                    <button mat-raised-button color="accent" style="width: 80%;">
+                        Total : ${{totalPagar.toFixed(2)}}
                     </button>
                 </mat-grid-tile>
 
@@ -211,13 +214,13 @@
         <mat-grid-list cols="4" rowHeight="80px">
             <mat-grid-tile [colspan]="3"></mat-grid-tile>
             <mat-grid-tile>
-                <button mat-raised-button color="primary" style="width: 80%;" 
-                        [disabled]="listaProductosParaPedidos.length < 1 || bloquearBotonRegistrar" 
-                        (click)="registrarPedidos()">
+                <button mat-raised-button color="primary" style="width: 80%;"
+                    [disabled]="listaProductosParaPedidos.length < 1 || bloquearBotonRegistrar"
+                    (click)="registrarPedidos()">
                     <mat-icon>new_label</mat-icon> Registrar
                 </button>
             </mat-grid-tile>
         </mat-grid-list>
-        
+
     </mat-card-content>
 </mat-card>

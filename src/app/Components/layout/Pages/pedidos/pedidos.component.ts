@@ -33,11 +33,14 @@ export class PedidosComponent implements OnInit {
     clienteSeleccionado: Clientes | null = null;
     totalPagar: number = 0;
     amountTotalModal: number = 0;
-    interes: string ='';
-    total: number =0;
+    interes: string = '';
+    total: number = 0;
     formularioProductoPedidos: FormGroup;
-    columnasTabla: string[] = ['Producto','Incentivo', 'PVF', 'PVP', 'CantidadOrdenada', 'CantidadBonificada', 'PorcentajeDescuento', 'Cantidad', 'Stock', 'PrecioUnitario', 'slVirtualAvailable','Subtotal', 'Acciones'];
+    columnasTabla: string[] = ['Producto', 'Incentivo', 'PVF', 'PVP', 'CantidadOrdenada', 'CantidadBonificada', 'PorcentajeDescuento', 'Cantidad', 'Stock', 'PrecioUnitario', 'slVirtualAvailable', 'Subtotal', 'Acciones'];
     datosDetallePedidos = new MatTableDataSource(this.listaProductosParaPedidos);
+    page: number = 1;
+    pageSize: number = 20;
+    search: string = '';
 
     constructor(
         private _productosService: ProductosService,
@@ -51,10 +54,9 @@ export class PedidosComponent implements OnInit {
             Producto: ['', Validators.required],
             Cantidad: ['', Validators.required],
             Cliente: ['', Validators.required],
-            //RUC: [this.clienteSeleccionado.vat, Validators.required],
         });
 
-        this._productosService.lista().subscribe({
+        this._productosService.lista(this.page, this.pageSize, this.search).subscribe({
             next: (data) => {
                 if (data.status) {
                     const lista = data.value as Productos[];
@@ -64,15 +66,7 @@ export class PedidosComponent implements OnInit {
             error: (e) => { console.error('Error al obtener la lista de productos', e); }
         });
 
-        this._clientesService.lista().subscribe({
-            next: (data) => {
-                if (data.status) {
-                    this.listaClientes = data.value as Clientes[];
-                    this.listaClientesFiltro = [...this.listaClientes];
-                }
-            },
-            error: (e) => { console.error('Error al obtener la lista de clientes', e); }
-        });
+        this.cargarClientes();
 
         this.formularioProductoPedidos.get('Producto')?.valueChanges.subscribe(value => {
             this.listaProductosFiltro = this.retornarProductosPorFiltro(value);
@@ -84,15 +78,33 @@ export class PedidosComponent implements OnInit {
 
     }
 
+    cargarClientes() {
+        this._clientesService.lista(this.page, this.pageSize, this.search).subscribe({
+            next: (data) => {
+                if (data.status) {
+                    this.listaClientes = data.value as Clientes[];
+                    this.listaClientesFiltro = [...this.listaClientes];
+                }
+            },
+            error: (e) => { console.error('Error al obtener la lista de clientes', e); }
+        });
+    }
+
+    aplicarFiltroTable(event: Event) {
+        const filterValue = (event.target as HTMLInputElement).value;
+        this.search = filterValue.trim().toLowerCase();
+        this.page = 1; // Reiniciar la paginación al buscar
+        this.cargarClientes();
+    }
+
     retornarProductosPorFiltro(busqueda: any): Productos[] {
-        // Verificar si busqueda es null o undefined
         if (busqueda == null) {
             console.warn('El parámetro busqueda es null o undefined');
             return [];
         }
-    
+
         let valorBuscado: string;
-    
+
         if (typeof busqueda === 'string') {
             valorBuscado = busqueda.toLocaleLowerCase();
         } else if (busqueda.name) {
@@ -101,16 +113,20 @@ export class PedidosComponent implements OnInit {
             console.warn('El objeto busqueda no tiene la propiedad name');
             return [];
         }
-    
+
         return this.listaProductos.filter(item =>
             item.name.toLocaleLowerCase().includes(valorBuscado)
         );
     }
-    
+
     retornarClientesPorFiltro(busqueda: any): Clientes[] {
         const valorBuscado = typeof busqueda === 'string' ? busqueda.toLocaleLowerCase() : '';
         return this.listaClientes.filter(item =>
-            item && item.name && item.name.toLocaleLowerCase().includes(valorBuscado)
+            item && (
+                item.name.toLocaleLowerCase().includes(valorBuscado) ||
+                item.vat.toLocaleLowerCase().includes(valorBuscado) ||
+                item.nxtIdErp.toLocaleLowerCase().includes(valorBuscado)
+            )
         );
     }
 
@@ -125,11 +141,9 @@ export class PedidosComponent implements OnInit {
     mostrarClientes(cliente: any): string {
         return cliente && cliente.name ? cliente.name : '';
     }
-    
 
     productosParaPedido(event: any) {
         this.productoSeleccionado = event.option.value;
-        //this.formularioProductoPedidos.patchValue({ Producto: this.productoSeleccionado.displayName });
     }
 
     clientesParaPedido(event: any) {
@@ -140,19 +154,19 @@ export class PedidosComponent implements OnInit {
         if (!this.productoSeleccionado) {
             return;
         }
-    
+
         if (!this.formularioProductoPedidos.valid) {
             Swal.fire('Error', 'Debe llenar todos los campos del formulario', 'error');
             return;
         }
-    
+
         const _cantidad: number = this.formularioProductoPedidos.value.Cantidad;
         const _precio: number = parseFloat(String(this.productoSeleccionado.slProductPvp).replace(',', '.')); // Convertir a número
-    
+
         if (!isNaN(_precio)) { // Verificar si es un número válido
             const _total: number = _cantidad * _precio;
             this.totalPagar += _total;
-    
+
             this.listaProductosParaPedidos.push({
                 iddetallepedido: 0,
                 idpedido: 0,
@@ -173,30 +187,26 @@ export class PedidosComponent implements OnInit {
                 iva: 0,
                 final: ''
             });
-    
+
             this.datosDetallePedidos = new MatTableDataSource(this.listaProductosParaPedidos);
         } else {
             console.error('El precio del producto no es un número válido');
         }
-    
+
         // Resetear solo los campos de Producto y Cantidad
         this.formularioProductoPedidos.patchValue({
             Producto: '',
             Cantidad: ''
         });
-    
+
         this.productoSeleccionado = undefined!;
     }
-    
 
     eliminarProducto(detalle: DetallePedidos) {
         this.totalPagar -= parseFloat(detalle.amountTotal);
         this.listaProductosParaPedidos = this.listaProductosParaPedidos.filter(p => p.idProducto != detalle.idProducto);
         this.datosDetallePedidos = new MatTableDataSource(this.listaProductosParaPedidos);
     }
-
-
-    
 
     getTotal(): number {
         return this.listaProductosParaPedidos.map(t => parseFloat(t.slSubtotal)).reduce((acc, value) => acc + value, 0);
@@ -212,29 +222,28 @@ export class PedidosComponent implements OnInit {
     getTotalAmount(): number {
         return this.listaProductosParaPedidos.reduce((acc, item) => acc + parseFloat(item.slSubtotal), 0);
     }
-    
 
     abrirModalPedido(): void {
         const dialogRef = this.dialog.open(ModalPedidoComponent, {
             width: '500px',
             data: { productos: this.listaProductosFiltro } // Pasar la lista de productos al modal
         });
-    
+
         dialogRef.afterClosed().subscribe((data: { productoSeleccionado: Productos | undefined, cantidad: number }) => {
             if (data && data.productoSeleccionado) {
                 const productoSeleccionado = data.productoSeleccionado;
                 const cantidad = data.cantidad;
-    
+
                 const precioString = String(productoSeleccionado.slProductPvp); // Convertir a cadena de caracteres
                 const precio = parseFloat(precioString);
                 if (!isNaN(precio)) { // Verificar si es un número válido
                     const totalProducto = precio * cantidad;
                     this.totalPagar += totalProducto;
-    
+
                     const _precioList = parseFloat(String(productoSeleccionado.listPrice).replace(',', '.')); // Convertir a número
                     const _precioPvp = parseFloat(String(productoSeleccionado.slProductPvp).replace(',', '.')); // Convertir a número
                     const subtotal = _precioPvp * cantidad;
-    
+
                     this.listaProductosParaPedidos.push({
                         iddetallepedido: 0,
                         idpedido: 0,
@@ -255,11 +264,11 @@ export class PedidosComponent implements OnInit {
                         iva: 0,
                         final: '10'
                     });
-                    
+
                     this.datosDetallePedidos = new MatTableDataSource(this.listaProductosParaPedidos);
 
                     this.amountTotalModal = subtotal;
-                    this.interes= productoSeleccionado.taxesId;
+                    this.interes = productoSeleccionado.taxesId;
 
                 } else {
                     console.error('El precio del producto no es un número válido');
@@ -267,12 +276,11 @@ export class PedidosComponent implements OnInit {
             }
         });
     }
-    
 
     registrarPedidos() {
         if (this.listaProductosParaPedidos.length > 0 && this.clienteSeleccionado) {
             this.bloquearBotonRegistrar = true;
-    
+
             // Obtener la fecha actual
             const today = new Date();
             const day = today.getDate();
@@ -282,9 +290,9 @@ export class PedidosComponent implements OnInit {
             const formattedMonth = (month < 10 ? '0' : '') + month;
             const formattedDate = `${formattedDay}/${formattedMonth}/${year}`;
             const _total = this.getTotalAmount();
-    
+
             const amountTotalFormatted = _total.toFixed(2).replace(',', '.');
-    
+
             const request: Pedidos = {
                 idcliente: this.clienteSeleccionado.idcliente,
                 descripcionClientes: this.clienteSeleccionado.name,
@@ -305,9 +313,9 @@ export class PedidosComponent implements OnInit {
                 detallepedidos: this.listaProductosParaPedidos,
                 idpedido: 0,
             };
-    
+
             console.log('Registrando pedido:', request);
-    
+
             this._pedidosService.registrar(request).subscribe({
                 next: (response) => {
                     console.log('Respuesta del servidor:', response);
@@ -317,7 +325,7 @@ export class PedidosComponent implements OnInit {
                         this.datosDetallePedidos = new MatTableDataSource(this.listaProductosParaPedidos);
                         this.formularioProductoPedidos.reset();
                         this.clienteSeleccionado = null;
-    
+
                         Swal.fire({
                             icon: 'success',
                             title: 'Pedido Registrado'
@@ -330,17 +338,17 @@ export class PedidosComponent implements OnInit {
                     console.error('Error al registrar el pedido', e);
                 }
             });
-    
+
             this.bloquearBotonRegistrar = false;
         } else {
             this._utilidadService.mostrarAlerta('Debe agregar productos y seleccionar un cliente', 'Error');
         }
     }
-    
+
     confirmarPedidos() {
         if (this.listaProductosParaPedidos.length > 0 && this.clienteSeleccionado) {
             this.bloquearBotonRegistrar = true;
-    
+
             // Verificar las condiciones adicionales del cliente
             if (
                 this.clienteSeleccionado.estado !== 'ACTIVO' ||
@@ -352,7 +360,7 @@ export class PedidosComponent implements OnInit {
                 this.bloquearBotonRegistrar = false;
                 return;
             }
-    
+
             // Verificar si todos los productos tienen slVirtualAvailable mayor a 0
             const productosSinStock = this.listaProductosParaPedidos.filter(producto => parseFloat(producto.slVirtualAvailable) <= 0);
             if (productosSinStock.length > 0) {
@@ -361,7 +369,7 @@ export class PedidosComponent implements OnInit {
                 this.bloquearBotonRegistrar = false;
                 return;
             }
-    
+
             // Obtener la fecha actual
             const today = new Date();
             const day = today.getDate();
@@ -370,10 +378,10 @@ export class PedidosComponent implements OnInit {
             const formattedDay = (day < 10 ? '0' : '') + day;
             const formattedMonth = (month < 10 ? '0' : '') + month;
             const formattedDate = `${formattedDay}/${formattedMonth}/${year}`;
-    
+
             const _total = this.getTotalAmount();
             const amountTotalFormatted = _total.toFixed(2).replace(',', '.');
-    
+
             const request: Pedidos = {
                 idcliente: this.clienteSeleccionado.idcliente,
                 descripcionClientes: this.clienteSeleccionado.name,
@@ -394,9 +402,9 @@ export class PedidosComponent implements OnInit {
                 detallepedidos: this.listaProductosParaPedidos,
                 idpedido: 0,
             };
-    
+
             console.log('Confirmando pedido:', request);
-    
+
             this._pedidosService.registrar(request).subscribe({
                 next: (response) => {
                     if (response.status) {
@@ -405,7 +413,7 @@ export class PedidosComponent implements OnInit {
                         this.datosDetallePedidos = new MatTableDataSource(this.listaProductosParaPedidos);
                         this.formularioProductoPedidos.reset();
                         this.clienteSeleccionado = null;
-    
+
                         Swal.fire({
                             icon: 'success',
                             title: 'Pedido Confirmado'
@@ -421,20 +429,9 @@ export class PedidosComponent implements OnInit {
                     this.bloquearBotonRegistrar = false;
                 }
             });
-    
+
         } else {
             this._utilidadService.mostrarAlerta('Debe agregar productos y seleccionar un cliente', 'Error');
         }
     }
-    
-    
-    
-
-
-
-    
-    
-    
-
-
 }

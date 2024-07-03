@@ -15,3 +15,15 @@ table {
     font-size: 14px;
     width: 100%;
 }
+
+.mat-elevation-z2 {
+    max-height: 70vh;
+    overflow: auto;
+  }
+  
+  .example-viewport {
+    height: 70vh;
+    width: 100%;
+  }
+  
+  

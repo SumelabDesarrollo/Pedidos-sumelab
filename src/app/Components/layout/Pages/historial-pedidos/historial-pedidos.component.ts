@@ -5,7 +5,6 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 import moment from 'moment';
-import { forkJoin } from 'rxjs';
 
 import { ModalDetallePedidoComponent } from '../../Modales/modal-detalle-pedido/modal-detalle-pedido.component';
 import { Pedidos } from '../../../../Interfaces/pedidos';
@@ -39,11 +38,12 @@ export class HistorialPedidosComponent implements OnInit, AfterViewInit {
   opcionesBusqueda: any[] = [
     { value: "fecha", descripcion: "Por fechas" }
   ];
-  columnasTabla: string[] = ["cliente", "comercial", "fechaRegistro", "estado","Total", "accion"];
+  columnasTabla: string[] = ["cliente", "comercial", "fechaRegistro", "estado", "Total", "accion"];
   dataInicio: Pedidos[] = [];
   listaClientes: Clientes[] = [];
   datosListaPedidos = new MatTableDataSource(this.dataInicio);
-  clientesCargados: boolean = false;  // Variable para controlar la carga de clientes
+  clientesCargados: boolean = false;
+
   @ViewChild(MatPaginator) paginacionTabla!: MatPaginator;
 
   constructor(
@@ -77,26 +77,26 @@ export class HistorialPedidosComponent implements OnInit, AfterViewInit {
 
   cargarClientes(): void {
     if (!this.clientesCargados) {
-      this._clienteServicio.lista().subscribe({
+      this._clienteServicio.listaTodos().subscribe({
         next: (data: ResponseApi) => {
           if (data.status) {
             this.listaClientes = data.value;
-            this.clientesCargados = true;  // Marcar los clientes como cargados
-            console.log('Clientes cargados:', this.listaClientes);  // Log para verificar los clientes cargados
-            // Llamar a la búsqueda de pedidos después de cargar los clientes
+            this.clientesCargados = true;
+            console.log('Clientes cargados:', this.listaClientes);
             this.buscarPedidos();
           } else {
             this._utilidadServicio.mostrarAlerta("No se pudieron cargar los clientes", "Oops");
           }
         },
         error: (e: any) => {
-          console.error(e);
+          console.error('Error al obtener todos los clientes', e);
         }
       });
     } else {
       console.log('Clientes ya cargados:', this.listaClientes);
     }
   }
+
 
   aplicarFiltroTable(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;
@@ -126,7 +126,7 @@ export class HistorialPedidosComponent implements OnInit, AfterViewInit {
       next: (data: ResponseApi) => {
         if (data.status) {
           console.log('Pedidos recibidos:', data.value);
-          console.log('Lista de clientes al buscar pedidos:', this.listaClientes);  // Log para verificar los clientes al buscar pedidos
+          console.log('Lista de clientes al buscar pedidos:', this.listaClientes);
           this.datosListaPedidos.data = data.value.map((pedido: Pedidos) => {
             const cliente = this.listaClientes.find(c => c.idcliente === pedido.idcliente);
             const clienteDisplayName = cliente ? cliente.name : 'Cliente desconocido';
@@ -154,7 +154,6 @@ export class HistorialPedidosComponent implements OnInit, AfterViewInit {
       width: "700px"
     });
   }
-  
 
   editarPedido(_pedido: Pedidos): void {
     const dialogRef = this.dialog.open(ModalEditarPedidoComponent, {
@@ -165,7 +164,7 @@ export class HistorialPedidosComponent implements OnInit, AfterViewInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.buscarPedidos(); // Refrescar la lista de pedidos si se editó un pedido
+        this.buscarPedidos();
       }
     });
   }
@@ -176,7 +175,7 @@ export class HistorialPedidosComponent implements OnInit, AfterViewInit {
         next: (data: ResponseApi) => {
           if (data.status) {
             this._utilidadServicio.mostrarAlerta("Pedido eliminado exitosamente", "Hecho");
-            this.buscarPedidos(); // Refrescar la lista de pedidos
+            this.buscarPedidos();
           } else {
             this._utilidadServicio.mostrarAlerta("No se pudo eliminar el pedido", "Error");
           }
@@ -190,20 +189,16 @@ export class HistorialPedidosComponent implements OnInit, AfterViewInit {
   }
 
   actualizarEstadoPedido(pedido: Pedidos, nuevoEstado: string): void {
-    // Buscar el cliente asociado al pedido
     const cliente = this.listaClientes.find(c => c.idcliente === pedido.idcliente);
-  
-    // Verificar las condiciones del cliente
+
     if (
       cliente?.estado === 'ACTIVO' &&
       cliente?.maximodias < 5 &&
       cliente?.saldo < parseFloat(cliente.creditLimit)
     ) {
-      // Verificar también las condiciones del detalle de pedidos
       const detallesInvalidos = pedido.detallepedidos.filter(detalle => parseFloat(detalle.slVirtualAvailable) <= 0);
-  
+
       if (detallesInvalidos.length === 0) {
-        // Todas las condiciones se cumplen, proceder con la actualización del estado
         this._pedidoServicio.actualizarEstado(pedido.idpedido, nuevoEstado).subscribe({
           next: (data: ResponseApi) => {
             if (data.status) {
@@ -219,21 +214,12 @@ export class HistorialPedidosComponent implements OnInit, AfterViewInit {
           }
         });
       } else {
-        // Mostrar mensaje de error con los productos sin stock
         const productosSinStock = detallesInvalidos.map(detalle => detalle.descripcionProductos);
-        const mensaje = `No se pueden cumplir las condiciones para actualizar el estado del pedido. Productos sin stock: ${productosSinStock.join(', ')}`;
+        const mensaje = `Los siguientes productos no tienen stock disponible:  ${productosSinStock.join(', ')}`;
         this._utilidadServicio.mostrarAlerta(mensaje, "Error");
       }
     } else {
-      // Mostrar mensaje de error si no se cumplen las condiciones del cliente
-      this._utilidadServicio.mostrarAlerta("No se cumple con lo requisitos para confirmar la orden:"+"  "+"Estado Cliente:"+cliente?.estado+"   "+"Días Vencidos:"+cliente?.maximodias+"   "+"Saldo:"+cliente?.saldo, "Error");
+      this._utilidadServicio.mostrarAlerta("No se cumple con lo requisitos para confirmar la orden:" + "  " + "Estado Cliente:" + cliente?.estado + "   " + "Días Vencidos:" + cliente?.maximodias + "   " + "Saldo:" + cliente?.saldo, "Error");
     }
   }
-  
-  
-
-
-  
-
-  
 }

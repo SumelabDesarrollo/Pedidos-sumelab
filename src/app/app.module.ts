@@ -9,6 +9,7 @@ import { SharedModule } from './Reutilizable/shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { ModalEditarPedidoComponent } from './Modales/modal-editar-pedido/modal-editar-pedido.component';
+import { ScrollingModule } from '@angular/cdk/scrolling'; // Importar ScrollingModule
 //import { ProductoModalComponent } from './producto-modal/producto-modal.component';
 
 
@@ -24,7 +25,8 @@ import { ModalEditarPedidoComponent } from './Modales/modal-editar-pedido/modal-
     BrowserModule,
     AppRoutingModule,
     SharedModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    ScrollingModule, // Agregar ScrollingModule aquí
   ],
   providers: [
     provideAnimationsAsync()

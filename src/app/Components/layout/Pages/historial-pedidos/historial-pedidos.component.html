@@ -80,14 +80,19 @@
             <button mat-icon-button color="primary" (click)="verDetallePedido(pedido)" matTooltip="Ver detalle">
               <mat-icon>visibility</mat-icon>
             </button>
-            <button mat-icon-button color="accent" (click)="editarPedido(pedido)" matTooltip="Editar">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button mat-icon-button color="warn" (click)="eliminarPedido(pedido)" matTooltip="Eliminar">
-              <mat-icon>delete</mat-icon>
-            </button>
+            <!-- Ocultar los botones de editar y eliminar si el estado es 'Pedido de Venta' -->
+            <ng-container *ngIf="pedido.estado.trim().toLowerCase() !== 'pedido de venta'">
+              <button mat-icon-button color="accent" (click)="editarPedido(pedido)" matTooltip="Editar">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="eliminarPedido(pedido)" matTooltip="Eliminar">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </ng-container>
+            
           </td>
         </ng-container>
+        
 
         <tr mat-header-row *matHeaderRowDef="columnasTabla"></tr>
         <tr mat-row *matRowDef="let row; columns: columnasTabla;"></tr>

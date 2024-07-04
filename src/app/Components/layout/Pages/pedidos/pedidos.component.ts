@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -48,6 +48,7 @@ export class PedidosComponent implements OnInit {
         private _utilidadService: UtilidadService,
         private _clientesService: ClientesService,
         private fb: FormBuilder,
+        private cdr: ChangeDetectorRef,
         public dialog: MatDialog
     ) {
         this.formularioProductoPedidos = this.fb.group({
@@ -90,12 +91,28 @@ export class PedidosComponent implements OnInit {
         });
     }
 
+    normalizarYOrdenarPalabras(texto: string): string[] {
+        return texto.toLowerCase()
+                    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Elimina acentos
+                    .replace(/\s+/g, ' ').trim() // Elimina espacios extra y al final
+                    .split(' '); // Divide las palabras para la búsqueda
+    }
+    
+    
+    
+
     aplicarFiltroTable(event: Event) {
         const filterValue = (event.target as HTMLInputElement).value;
-        this.search = filterValue.trim().toLowerCase();
+        const palabrasClave = this.normalizarYOrdenarPalabras(filterValue);
+    
         this.page = 1; // Reiniciar la paginación al buscar
-        this.cargarClientes();
+    
+        // Asigna las palabras clave de nuevo a un string para realizar la búsqueda
+        this.search = palabrasClave.join(' '); // Correctamente usa join aquí
+    
+        this.cargarClientes(); // Suponiendo que esta función puede manejar la búsqueda con los términos separados por espacios
     }
+    
 
     retornarProductosPorFiltro(busqueda: any): Productos[] {
         if (busqueda == null) {
@@ -131,6 +148,7 @@ export class PedidosComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        this.cargarClientes();
         // Lógica de inicialización aquí
     }
 
@@ -138,16 +156,23 @@ export class PedidosComponent implements OnInit {
         return producto ? producto.name : '';
     }
 
-    mostrarClientes(cliente: any): string {
-        return cliente && cliente.name ? cliente.name : '';
-    }
+    mostrarClientes(cliente: Clientes): string {
+        return cliente ? cliente.name.trim() : '';
+      }
 
     productosParaPedido(event: any) {
         this.productoSeleccionado = event.option.value;
     }
 
-    clientesParaPedido(event: any) {
-        this.clienteSeleccionado = event.option.value;
+    clientesParaPedido(event: any): void {
+        if (event.option && event.option.value) {
+            const cliente = event.option.value;
+            this.clienteSeleccionado = cliente; // Actualiza la variable de cliente seleccionado
+            this.formularioProductoPedidos.patchValue({
+                Cliente: cliente.name.trim()
+            });
+            this.cdr.detectChanges(); // Forza la detección de cambios para actualizar la vista
+        }
     }
 
     agregarProductosParaPedidos() {
@@ -379,16 +404,16 @@ export class PedidosComponent implements OnInit {
             }
 
             // Verificar si todos los productos tienen slVirtualAvailable mayor a 0 y cantidad ordenada adecuada
-        const productosConProblemas = this.listaProductosParaPedidos.filter(producto => 
-            parseFloat(producto.slVirtualAvailable) <= 0 || producto.qtyOrder > parseFloat(producto.slVirtualAvailable)
-        );
+            const productosConProblemas = this.listaProductosParaPedidos.filter(producto =>
+                parseFloat(producto.slVirtualAvailable) <= 0 || producto.qtyOrder > parseFloat(producto.slVirtualAvailable)
+            );
 
-        if (productosConProblemas.length > 0) {
-            const nombresProductosConProblemas = productosConProblemas.map(producto => producto.descripcionProductos).join(', ');
-            this._utilidadService.mostrarAlerta(`Los siguientes productos tienen problemas de stock o cantidad ordenada excede el stock disponible: ${nombresProductosConProblemas}`, 'Error');
-            this.bloquearBotonRegistrar = false;
-            return;
-        }
+            if (productosConProblemas.length > 0) {
+                const nombresProductosConProblemas = productosConProblemas.map(producto => producto.descripcionProductos).join(', ');
+                this._utilidadService.mostrarAlerta(`Los siguientes productos tienen problemas de stock o cantidad ordenada excede el stock disponible: ${nombresProductosConProblemas}`, 'Error');
+                this.bloquearBotonRegistrar = false;
+                return;
+            }
 
             // Obtener la fecha actual
             const today = new Date();

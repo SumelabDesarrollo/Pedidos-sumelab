@@ -14,6 +14,8 @@ import { Clientes } from '../../../../Interfaces/clientes';
 import { ClientesService } from '../../../../Services/clientes.service';
 import { ResponseApi } from '../../../../Interfaces/response-api';
 import { ModalEditarPedidoComponent } from '../../Modales/modal-editar-pedido/modal-editar-pedido.component';
+import { ProductosService } from '../../../../Services/productos.service';
+import { Productos } from '../../../../Interfaces/productos';
 
 export const MY_DATE_FORMATS = {
   parse: {
@@ -35,13 +37,12 @@ export const MY_DATE_FORMATS = {
 })
 export class HistorialPedidosComponent implements OnInit, AfterViewInit {
   formularioBusqueda: FormGroup;
-  opcionesBusqueda: any[] = [
-    { value: "fecha", descripcion: "Por fechas" }
-  ];
+  opcionesBusqueda: any[] = [{ value: "fecha", descripcion: "Por fechas" }];
   columnasTabla: string[] = ["cliente", "comercial", "fechaRegistro", "estado", "Total", "accion"];
   dataInicio: Pedidos[] = [];
   listaClientes: Clientes[] = [];
-  datosListaPedidos = new MatTableDataSource(this.dataInicio);
+  listaProductos: Productos[] = [];
+  datosListaPedidos = new MatTableDataSource<Pedidos>(this.dataInicio);
   clientesCargados: boolean = false;
 
   @ViewChild(MatPaginator) paginacionTabla!: MatPaginator;
@@ -49,9 +50,10 @@ export class HistorialPedidosComponent implements OnInit, AfterViewInit {
   constructor(
     private fb: FormBuilder,
     private dialog: MatDialog,
-    private _pedidoServicio: PedidosService,
-    private _clienteServicio: ClientesService,
-    private _utilidadServicio: UtilidadService
+    private pedidosService: PedidosService,
+    private clientesService: ClientesService,
+    private utilidadService: UtilidadService,
+    private productosService: ProductosService
   ) {
     this.formularioBusqueda = this.fb.group({
       buscarPor: ["fecha"],
@@ -69,6 +71,7 @@ export class HistorialPedidosComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.cargarClientes();
+    this.cargarProductos();
   }
 
   ngAfterViewInit(): void {
@@ -77,7 +80,7 @@ export class HistorialPedidosComponent implements OnInit, AfterViewInit {
 
   cargarClientes(): void {
     if (!this.clientesCargados) {
-      this._clienteServicio.listaTodos().subscribe({
+      this.clientesService.listaTodos().subscribe({
         next: (data: ResponseApi) => {
           if (data.status) {
             this.listaClientes = data.value;
@@ -85,7 +88,7 @@ export class HistorialPedidosComponent implements OnInit, AfterViewInit {
             console.log('Clientes cargados:', this.listaClientes);
             this.buscarPedidos();
           } else {
-            this._utilidadServicio.mostrarAlerta("No se pudieron cargar los clientes", "Oops");
+            this.utilidadService.mostrarAlerta("No se pudieron cargar los clientes", "Oops");
           }
         },
         error: (e: any) => {
@@ -97,6 +100,21 @@ export class HistorialPedidosComponent implements OnInit, AfterViewInit {
     }
   }
 
+  cargarProductos(): void {
+    this.productosService.listaTodos().subscribe({
+      next: (data: ResponseApi) => {
+        if (data.status) {
+          this.listaProductos = data.value;
+        } else {
+          this.utilidadService.mostrarAlerta("No se pudieron cargar los productos", "Oops");
+        }
+      },
+      error: (e: any) => {
+        console.error('Error al obtener todos los productos', e);
+        this.utilidadService.mostrarAlerta("Error al cargar productos", "Error");
+      }
+    });
+  }
 
   aplicarFiltroTable(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;
@@ -106,12 +124,12 @@ export class HistorialPedidosComponent implements OnInit, AfterViewInit {
   buscarPedidos(): void {
     let _fechaInicio: string = "";
     let _fechaFin: string = "";
-    if (this.formularioBusqueda.value.buscarPor == "fecha") {
+    if (this.formularioBusqueda.value.buscarPor === "fecha") {
       _fechaInicio = moment(this.formularioBusqueda.value.fechaInicio).format("DD/MM/YYYY");
       _fechaFin = moment(this.formularioBusqueda.value.fechaFin).format("DD/MM/YYYY");
 
       if (_fechaInicio === "Invalid date" || _fechaFin === "Invalid date") {
-        this._utilidadServicio.mostrarAlerta("Debe ingresar ambas fechas", "Oops");
+        this.utilidadService.mostrarAlerta("Debe ingresar ambas fechas", "Oops");
         return;
       }
     }
@@ -121,16 +139,12 @@ export class HistorialPedidosComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    console.log('Buscando pedidos con fechas:', _fechaInicio, _fechaFin);
-    this._pedidoServicio.historial(this.formularioBusqueda.value.buscarPor, _fechaInicio, _fechaFin).subscribe({
+    this.pedidosService.historial(this.formularioBusqueda.value.buscarPor, _fechaInicio, _fechaFin).subscribe({
       next: (data: ResponseApi) => {
         if (data.status) {
-          console.log('Pedidos recibidos:', data.value);
-          console.log('Lista de clientes al buscar pedidos:', this.listaClientes);
           this.datosListaPedidos.data = data.value.map((pedido: Pedidos) => {
             const cliente = this.listaClientes.find(c => c.idcliente === pedido.idcliente);
             const clienteDisplayName = cliente ? cliente.name : 'Cliente desconocido';
-            console.log('Procesando pedido:', pedido, 'Cliente encontrado:', cliente);
             return {
               ...pedido,
               clienteDisplayName,
@@ -138,7 +152,7 @@ export class HistorialPedidosComponent implements OnInit, AfterViewInit {
             };
           });
         } else {
-          this._utilidadServicio.mostrarAlerta("No se encontraron datos", "Oops");
+          this.utilidadService.mostrarAlerta("No se encontraron datos", "Oops");
         }
       },
       error: (e: any) => {
@@ -147,17 +161,17 @@ export class HistorialPedidosComponent implements OnInit, AfterViewInit {
     });
   }
 
-  verDetallePedido(_pedido: Pedidos): void {
+  verDetallePedido(pedido: Pedidos): void {
     this.dialog.open(ModalDetallePedidoComponent, {
-      data: _pedido,
+      data: pedido,
       disableClose: true,
       width: "700px"
     });
   }
 
-  editarPedido(_pedido: Pedidos): void {
+  editarPedido(pedido: Pedidos): void {
     const dialogRef = this.dialog.open(ModalEditarPedidoComponent, {
-      data: _pedido,
+      data: pedido,
       disableClose: true,
       width: '700px'
     });
@@ -169,20 +183,20 @@ export class HistorialPedidosComponent implements OnInit, AfterViewInit {
     });
   }
 
-  eliminarPedido(_pedido: Pedidos): void {
-    if (confirm(`¿Estás seguro de que deseas eliminar el pedido con ID ${_pedido.idpedido}?`)) {
-      this._pedidoServicio.eliminar(_pedido.idpedido).subscribe({
+  eliminarPedido(pedido: Pedidos): void {
+    if (confirm(`¿Estás seguro de que deseas eliminar el pedido con ID ${pedido.idpedido}?`)) {
+      this.pedidosService.eliminar(pedido.idpedido).subscribe({
         next: (data: ResponseApi) => {
           if (data.status) {
-            this._utilidadServicio.mostrarAlerta("Pedido eliminado exitosamente", "Hecho");
+            this.utilidadService.mostrarAlerta("Pedido eliminado exitosamente", "Hecho");
             this.buscarPedidos();
           } else {
-            this._utilidadServicio.mostrarAlerta("No se pudo eliminar el pedido", "Error");
+            this.utilidadService.mostrarAlerta("No se pudo eliminar el pedido", "Error");
           }
         },
         error: (e: any) => {
           console.error(e);
-          this._utilidadServicio.mostrarAlerta("Hubo un error al eliminar el pedido", "Error");
+          this.utilidadService.mostrarAlerta("Hubo un error al eliminar el pedido", "Error");
         }
       });
     }
@@ -196,30 +210,39 @@ export class HistorialPedidosComponent implements OnInit, AfterViewInit {
       cliente?.maximodias < 5 &&
       cliente?.saldo < parseFloat(cliente.creditLimit)
     ) {
-      const detallesInvalidos = pedido.detallepedidos.filter(detalle => parseFloat(detalle.slVirtualAvailable) <= 0);
+      // Aquí ajustamos para verificar tanto slVirtualAvailable como la cantidad ordenada
+      const detallesInvalidos = pedido.detallepedidos.filter(detalle =>
+        parseFloat(detalle.slVirtualAvailable) <= 0 || detalle.qtyOrder > parseFloat(detalle.slVirtualAvailable)
+      );
 
       if (detallesInvalidos.length === 0) {
-        this._pedidoServicio.actualizarEstado(pedido.idpedido, nuevoEstado).subscribe({
+        this.pedidosService.actualizarEstado(pedido.idpedido, nuevoEstado).subscribe({
           next: (data: ResponseApi) => {
             if (data.status) {
-              this._utilidadServicio.mostrarAlerta("Estado actualizado exitosamente", "Hecho");
+              this.utilidadService.mostrarAlerta("Estado actualizado exitosamente", "Hecho");
               this.buscarPedidos();
             } else {
-              this._utilidadServicio.mostrarAlerta("No se pudo actualizar el estado", "Error");
+              this.utilidadService.mostrarAlerta("No se pudo actualizar el estado", "Error");
             }
           },
           error: (e: any) => {
             console.error(e);
-            this._utilidadServicio.mostrarAlerta("Hubo un error al actualizar el estado", "Error");
+            this.utilidadService.mostrarAlerta("Hubo un error al actualizar el estado", "Error");
           }
         });
       } else {
-        const productosSinStock = detallesInvalidos.map(detalle => detalle.descripcionProductos);
-        const mensaje = `Los siguientes productos no tienen stock disponible:  ${productosSinStock.join(', ')}`;
-        this._utilidadServicio.mostrarAlerta(mensaje, "Error");
+        // Mapeamos los productos para obtener sus nombres
+        const productosConProblemas = detallesInvalidos.map(detalle => {
+          const producto = this.listaProductos.find(p => p.idProducto === detalle.idProducto);
+          return producto ? producto.name : 'Producto desconocido';
+        });
+        const mensaje = `Los siguiente productos no tienen stock o excede la cantidad ordenada al stock disponible: ${productosConProblemas.join(', ')}`;
+        this.utilidadService.mostrarAlerta(mensaje, "Error");
       }
     } else {
-      this._utilidadServicio.mostrarAlerta("No se cumple con lo requisitos para confirmar la orden:" + "  " + "Estado Cliente:" + cliente?.estado + "   " + "Días Vencidos:" + cliente?.maximodias + "   " + "Saldo:" + cliente?.saldo, "Error");
+      // Mensaje de alerta si el cliente no cumple con los requisitos
+      this.utilidadService.mostrarAlerta("No se cumple con los requisitos para confirmar la orden: Estado del Cliente: " + cliente?.estado + ", Días Vencidos: " + cliente?.maximodias + ", Saldo: " + cliente?.saldo, "Error");
     }
   }
+
 }

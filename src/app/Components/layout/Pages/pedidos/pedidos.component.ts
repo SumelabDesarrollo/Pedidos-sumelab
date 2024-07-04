@@ -208,6 +208,20 @@ export class PedidosComponent implements OnInit {
         this.datosDetallePedidos = new MatTableDataSource(this.listaProductosParaPedidos);
     }
 
+    calcularSubtotal(element: any) {
+        const precio = parseFloat(element.priceUnit);
+        const subtotal = element.qtyOrder * precio;
+        element.slSubtotal = subtotal.toFixed(2); // Calcula el nuevo subtotal
+        element.amountTotal = subtotal.toFixed(2); // Actualiza el amountTotal con el nuevo subtotal
+
+        this.actualizarTotales(); // Actualiza los totales del pedido
+        this.refreshTable(); // Refresca la tabla para actualizar la vista
+    }
+
+    actualizarTotales() {
+        this.totalPagar = this.listaProductosParaPedidos.reduce((acc, item) => acc + parseFloat(item.slSubtotal), 0);
+    }
+
     getTotal(): number {
         return this.listaProductosParaPedidos.map(t => parseFloat(t.slSubtotal)).reduce((acc, value) => acc + value, 0);
     }
@@ -221,6 +235,9 @@ export class PedidosComponent implements OnInit {
 
     getTotalAmount(): number {
         return this.listaProductosParaPedidos.reduce((acc, item) => acc + parseFloat(item.slSubtotal), 0);
+    }
+    refreshTable() {
+        this.datosDetallePedidos.data = [...this.listaProductosParaPedidos];
     }
 
     abrirModalPedido(): void {
@@ -361,14 +378,17 @@ export class PedidosComponent implements OnInit {
                 return;
             }
 
-            // Verificar si todos los productos tienen slVirtualAvailable mayor a 0
-            const productosSinStock = this.listaProductosParaPedidos.filter(producto => parseFloat(producto.slVirtualAvailable) <= 0);
-            if (productosSinStock.length > 0) {
-                const productosSinStockNombres = productosSinStock.map(producto => producto.descripcionProductos).join(', ');
-                this._utilidadService.mostrarAlerta(`Los siguientes productos no tienen stock disponible: ${productosSinStockNombres}`, 'Error');
-                this.bloquearBotonRegistrar = false;
-                return;
-            }
+            // Verificar si todos los productos tienen slVirtualAvailable mayor a 0 y cantidad ordenada adecuada
+        const productosConProblemas = this.listaProductosParaPedidos.filter(producto => 
+            parseFloat(producto.slVirtualAvailable) <= 0 || producto.qtyOrder > parseFloat(producto.slVirtualAvailable)
+        );
+
+        if (productosConProblemas.length > 0) {
+            const nombresProductosConProblemas = productosConProblemas.map(producto => producto.descripcionProductos).join(', ');
+            this._utilidadService.mostrarAlerta(`Los siguientes productos tienen problemas de stock o cantidad ordenada excede el stock disponible: ${nombresProductosConProblemas}`, 'Error');
+            this.bloquearBotonRegistrar = false;
+            return;
+        }
 
             // Obtener la fecha actual
             const today = new Date();

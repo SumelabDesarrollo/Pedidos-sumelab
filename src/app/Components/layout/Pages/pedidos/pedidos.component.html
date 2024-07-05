@@ -6,16 +6,11 @@
 
 <h1 style="margin: 20px 0px 0px 40px">Nuevo Pedidos</h1>
 
-<mat-card style="margin: 20px 40px 40px 40px">
+<mat-card style="margin: 20px; width: 100%;">
     <mat-card-content>
         <form [formGroup]="formularioProductoPedidos" (ngSubmit)="agregarProductosParaPedidos()">
-
-            <mat-grid-list cols="4" rowHeight="80px">
-
-
-                <!-- Campo para seleccionar cliente -->
-                <!-- Campo para seleccionar cliente -->
-                <mat-grid-tile [colspan]="2">
+            <div class="grid-container">
+                <div class="grid-item large-item">
                     <mat-form-field class="full-width" appearance="fill">
                         <mat-label>Cliente</mat-label>
                         <input matInput type="text" placeholder="Buscar.." formControlName="Cliente"
@@ -27,113 +22,88 @@
                             </mat-option>
                         </mat-autocomplete>
                     </mat-form-field>
-                </mat-grid-tile>
+                </div>
 
-
-                <mat-grid-tile>
-                    <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
+                <div class="grid-item">
+                    <mat-form-field class="full-width" appearance="fill">
                         <mat-label class="transparent-label">Nombre Comercial</mat-label>
                         <input matInput type="text" [value]="clienteSeleccionado?.xStudioNombreComercialSap" readonly>
                     </mat-form-field>
-                </mat-grid-tile>
+                </div>
 
-                <mat-grid-tile>
-                    <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
+                <div class="grid-item">
+                    <mat-form-field class="full-width" appearance="fill">
                         <mat-label class="transparent-label">RUC</mat-label>
                         <input matInput type="text" [value]="clienteSeleccionado?.vat" readonly>
                     </mat-form-field>
-                </mat-grid-tile>
+                </div>
 
-                <mat-grid-tile>
-                    <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
+                <div class="grid-item">
+                    <mat-form-field class="full-width" appearance="fill">
                         <mat-label class="transparent-label">Asesor de Ventas</mat-label>
                         <input matInput type="text" [value]="clienteSeleccionado?.userId" readonly>
                     </mat-form-field>
-                </mat-grid-tile>
+                </div>
 
-                <mat-grid-tile>
-                    <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
+                <div class="grid-item">
+                    <mat-form-field class="full-width" appearance="fill">
                         <mat-label class="transparent-label">Asesor de Credito</mat-label>
                         <input matInput type="text" [value]="clienteSeleccionado?.asesorCredito" readonly>
                     </mat-form-field>
-                </mat-grid-tile>
+                </div>
 
-                <mat-grid-tile>
-                    <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
+                <div class="grid-item">
+                    <mat-form-field class="full-width" appearance="fill">
                         <mat-label class="transparent-label">Asesor de Call Center</mat-label>
                         <input matInput type="text" [value]="clienteSeleccionado?.asesorCallcenter" readonly>
                     </mat-form-field>
-                </mat-grid-tile>
+                </div>
 
-                <mat-grid-tile>
-                    <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
+                <div class="grid-item">
+                    <mat-form-field class="full-width" appearance="fill">
                         <mat-label class="transparent-label">Saldo</mat-label>
                         <input matInput type="text" [value]="clienteSeleccionado?.saldo" readonly>
                     </mat-form-field>
-                </mat-grid-tile>
+                </div>
 
-                <mat-grid-tile>
-                    <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
+                <div class="grid-item">
+                    <mat-form-field class="full-width" appearance="fill">
                         <mat-label class="transparent-label">Clase Cliente</mat-label>
                         <input matInput type="text" [value]="clienteSeleccionado?.slClaCli" readonly>
                     </mat-form-field>
-                </mat-grid-tile>
+                </div>
 
-                <mat-grid-tile>
-                    <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
+                <div class="grid-item">
+                    <mat-form-field class="full-width" appearance="fill">
                         <mat-label class="transparent-label">Estado</mat-label>
                         <input matInput type="text" [value]="clienteSeleccionado?.estado" readonly>
                     </mat-form-field>
-                </mat-grid-tile>
+                </div>
 
-                <mat-grid-tile>
-                    <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
+                <div class="grid-item">
+                    <mat-form-field class="full-width" appearance="fill">
                         <mat-label class="transparent-label">Unidad</mat-label>
                         <input matInput type="text" [value]="clienteSeleccionado?.slClaCli" readonly>
                     </mat-form-field>
-                </mat-grid-tile>
-                <mat-grid-tile>
-                    <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
+                </div>
+
+                <div class="grid-item">
+                    <mat-form-field class="full-width" appearance="fill">
                         <mat-label class="transparent-label">Días Vencidos</mat-label>
                         <input matInput type="text" [value]="clienteSeleccionado?.maximodias" readonly>
                     </mat-form-field>
-                </mat-grid-tile>
+                </div>
+            </div>
 
-                <!--<mat-grid-tile>
-                    <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
-                        <mat-label>Estado SAP</mat-label>
-                        <input matInput type="text" [value]="clienteSeleccionado?.slActiveSap === true ? 'Activo' : (clienteSeleccionado?.slActiveSap === false ? 'Desactivado' : clienteSeleccionado?.slActiveSap)" readonly>
-                    </mat-form-field>
-                </mat-grid-tile>-->
-
-                <!--<mat-grid-tile>
-                    <mat-form-field class="full-width" appearance="fill" style="margin-left: 40px;">
-                        <mat-label class="transparent-label">Límite de crédito</mat-label>
-                        <input matInput type="text" [value]="clienteSeleccionado?.creditLimit" readonly>
-                    </mat-form-field>
-                </mat-grid-tile>-->
-
-
-                <mat-grid-tile>
-                    <button mat-raised-button color="primary" style="width: 80%;" [disabled]="!clienteSeleccionado "
-                        (click)="abrirModalPedido()">
-                        <mat-icon>add</mat-icon> Añadir Productos
-                    </button>
-                </mat-grid-tile>
-
-                <!--<mat-grid-tile>
-                    <button mat-raised-button color="accent" style="width: 80%;">
-                        Total : ${{totalPagar.toFixed(2)}}
-                    </button>
-                </mat-grid-tile>-->
-
-            </mat-grid-list>
-
+            <div class="button-container">
+                <button mat-raised-button color="primary" [disabled]="!clienteSeleccionado" (click)="abrirModalPedido()">
+                    <mat-icon>add</mat-icon> Añadir Productos
+                </button>
+            </div>
         </form>
 
-        <div class="mat-elevation-z2" style="margin-top: 20px;">
+        <div class="mat-elevation-z2" style="margin-top: 20px; overflow-x: auto;">
             <table mat-table [dataSource]="datosDetallePedidos">
-
                 <!-- Columnas de la tabla -->
                 <ng-container matColumnDef="Producto">
                     <th mat-header-cell *matHeaderCellDef> Producto </th>
@@ -196,7 +166,6 @@
 
                 <tr mat-header-row *matHeaderRowDef="columnasTabla"></tr>
                 <tr mat-row *matRowDef="let row; columns: columnasTabla;"></tr>
-
             </table>
         </div>
 
@@ -212,17 +181,12 @@
             </div>
         </div>
 
-
-        <mat-grid-list cols="4" rowHeight="80px">
-            <mat-grid-tile [colspan]="3"></mat-grid-tile>
-            <mat-grid-tile>
-                <button mat-raised-button color="primary" style="width: 80%;"
-                    [disabled]="listaProductosParaPedidos.length < 1 || bloquearBotonRegistrar"
-                    (click)="registrarPedidos()">
-                    <mat-icon>new_label</mat-icon> Registrar
-                </button>
-            </mat-grid-tile>
-        </mat-grid-list>
-
+        <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+            <button mat-raised-button color="primary" style="width: auto;"
+                [disabled]="listaProductosParaPedidos.length < 1 || bloquearBotonRegistrar"
+                (click)="registrarPedidos()">
+                <mat-icon>new_label</mat-icon> Registrar
+            </button>
+        </div>
     </mat-card-content>
 </mat-card>

@@ -1,13 +1,60 @@
-.full-width{
-    width: 80%;
+/* Asegurar que la tarjeta se adapte correctamente en dispositivos pequeños */
+.mat-card {
+    margin: 20px;
+    width: 100%;
+    overflow-x: auto; /* Permitir desplazamiento horizontal si es necesario */
 }
 
-.table{
-    width: 100%;
+/* Ajuste de los campos de formulario */
+.mat-form-field {
+    margin-right: 10px; /* Añadir un poco de margen entre los campos */
+    white-space: nowrap; /* Evitar que el texto se divida en varias líneas */
+    width: 100%; /* Permitir que el campo crezca en ancho */
 }
+
+/* Contenedor de la cuadrícula */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px; /* Espacio entre los elementos */
+}
+
+/* Elementos de la cuadrícula */
+.grid-item {
+    display: flex;
+    flex-direction: column;
+    white-space: nowrap; /* Evitar que el texto se divida en varias líneas */
+    overflow: hidden; /* Ocultar el desbordamiento */
+    text-overflow: ellipsis; /* Mostrar puntos suspensivos si el texto es demasiado largo */
+}
+
+/* Ajustar tamaño específico para el cliente */
+.large-item {
+    grid-column: span 2; /* Hacer que el campo cliente ocupe dos columnas en la cuadrícula */
+}
+
+/* Ajustes para dispositivos móviles */
+@media (max-width: 600px) {
+    .grid-item {
+        grid-column: span 2; /* Hacer que cada campo ocupe dos columnas en pantallas pequeñas */
+    }
+    .large-item {
+        grid-column: span 4; /* Hacer que el campo cliente ocupe toda la fila en pantallas pequeñas */
+    }
+}
+
+/* Contenedor del botón */
+.button-container {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 10px;
+}
+
+/* Ajustes para la sección total */
 .total-section {
     margin-top: 20px;
     text-align: right;
+    width: 100%;
 }
 
 .total-section div {
